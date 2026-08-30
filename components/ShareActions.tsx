@@ -9,7 +9,7 @@ export default function ShareActions({ text, className }: { text: string; classN
   const toast = useToast();
 
   async function share() {
-    const shareData = { title: "Freelance Copilot", text };
+    const shareData = { title: "Freelance Copilote", text };
     // partage natif (mobile) si dispo
     const nav = navigator as Navigator & { share?: (d: ShareData) => Promise<void> };
     if (nav.share) {

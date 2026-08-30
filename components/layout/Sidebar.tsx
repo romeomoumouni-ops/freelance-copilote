@@ -48,7 +48,7 @@ export default function Sidebar({
               <br />
               <span className="relative inline-block">
                 <span className="absolute inset-x-0 bottom-0.5 h-[9px] rounded-sm bg-brand" />
-                <span className="relative">Copilot</span>
+                <span className="relative">Copilote</span>
               </span>
             </span>
             <span className="mt-1 block text-[10px] font-semibold uppercase tracking-[0.14em] text-ink-mute">
@@ -113,7 +113,7 @@ export default function Sidebar({
             Paramètres
           </Link>
           <p className="px-2 pt-1 text-[10px] leading-relaxed text-ink-mute/80">
-            Outil indépendant — non affilié à ComeUp.
+            Outil indépendant, non affilié à ComeUp.
           </p>
         </div>
       </aside>

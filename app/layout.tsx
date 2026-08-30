@@ -11,9 +11,9 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
-  title: "Freelance Copilot — Votre copilote IA pour vendre plus",
+  title: "Freelance Copilote · Ton copilote ComeUp",
   description:
-    "Collez le lien de votre profil freelance. Votre copilote analyse vos performances et vous indique exactement quoi améliorer pour vendre davantage sur ComeUp, Fiverr et Upwork.",
+    "Colle le lien de ton profil ComeUp : analyse en direct de tes vraies données, création de ta photo de profil, de tes miniatures et de tes pages de vente.",
 };
 
 export default function RootLayout({

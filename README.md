@@ -1,4 +1,4 @@
-# Freelance Copilot
+# Freelance Copilote
 
 Le copilote IA qui aide vraiment les freelances à vendre plus sur les marketplaces (ComeUp, Fiverr).
 **Aucune donnée simulée** : le SaaS lit réellement les pages publiques, mesure votre marché et vous dit

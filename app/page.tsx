@@ -100,7 +100,7 @@ export default function Landing() {
         <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-5">
           <a href="#accueil" className="shrink-0">
             <span className="text-[17px] font-extrabold tracking-tight text-ink">
-              Freelance <Hl>Copilot</Hl>
+              Freelance <Hl>Copilote</Hl>
             </span>
           </a>
 
@@ -243,7 +243,7 @@ export default function Landing() {
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/founder.png"
-                alt="Le fondateur de Freelance Copilot"
+                alt="Le fondateur de Freelance Copilote"
                 className="h-44 w-auto object-contain drop-shadow-[12px_2px_10px_rgba(147,177,255,0.45)]"
               />
               <div className="absolute right-[calc(50%-130px)] top-1 rotate-3 rounded-xl bg-brand px-2.5 py-1.5 shadow-pop">
@@ -395,7 +395,7 @@ export default function Landing() {
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/founder.png"
-                alt="Le fondateur de Freelance Copilot"
+                alt="Le fondateur de Freelance Copilote"
                 className="relative z-10 w-full object-contain drop-shadow-[20px_2px_14px_rgba(147,177,255,0.45)]"
               />
               {/* modales AU-DESSUS de la photo */}
@@ -514,7 +514,7 @@ export default function Landing() {
               <ul className="mt-5 space-y-2.5">
                 {[
                   { label: "Analyse complète de ton profil ComeUp", included: true },
-                  { label: "Chat intégré avec l'équipe Freelance Copilot", included: true },
+                  { label: "Chat intégré avec l'équipe Freelance Copilote", included: true },
                   { label: "Création de photos de profil professionnelles ComeUp", included: false },
                   { label: "Création de miniatures ComeUp", included: false },
                   { label: "Création de ta page de vente ComeUp", included: false },
@@ -549,7 +549,7 @@ export default function Landing() {
                   "Création de photos de profil professionnelles ComeUp",
                   "Création de miniatures ComeUp",
                   "Création de ta page de vente ComeUp",
-                  "Chat intégré avec l'équipe Freelance Copilot",
+                  "Chat intégré avec l'équipe Freelance Copilote",
                 ].map((f) => (
                   <li key={f} className="flex items-start gap-2 text-[13px] text-ink-soft">
                     <IconCheck size={15} className="mt-0.5 shrink-0 text-emerald-600" />
@@ -572,7 +572,7 @@ export default function Landing() {
       <footer className="border-t border-line py-10">
         <div className="mx-auto flex max-w-6xl flex-col items-center gap-3 px-5 text-center">
           <span className="text-[15px] font-extrabold tracking-tight text-ink">
-            Freelance <Hl>Copilot</Hl>
+            Freelance <Hl>Copilote</Hl>
           </span>
           <p className="max-w-md text-[11px] leading-relaxed text-ink-mute">
             Outil indépendant créé pour les vendeurs ComeUp, non affilié à ComeUp. Lecture des pages
