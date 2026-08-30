@@ -26,6 +26,8 @@ const config: Config = {
           900: "#713F12",
         },
         brand: "#FFEE66",
+        /* Bleu d'action (CTA unique d'abonnement) */
+        royal: { DEFAULT: "#2563EB", dark: "#1D4ED8", 50: "#EFF6FF" },
         /* Bleu marine d'accent : harmonie jaune/navy */
         navy: {
           DEFAULT: "#1E2A5A",
