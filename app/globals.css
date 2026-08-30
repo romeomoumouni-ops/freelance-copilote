@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-canvas text-ink antialiased;
+  font-feature-settings: "ss01" on, "cv01" on;
+}
+
+/* Discreet scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #d8d5cd transparent;
+}
+*::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+*::-webkit-scrollbar-thumb {
+  background: #d8d5cd;
+  border-radius: 999px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::selection {
+  background: #fff9c2;
+  color: #17161c;
+}
+
+input,
+textarea,
+select {
+  font-family: inherit;
+}
