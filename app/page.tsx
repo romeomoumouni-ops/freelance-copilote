@@ -8,7 +8,7 @@ const NAV = [
   { href: "#accueil", label: "Accueil" },
   { href: "#fonctionnalites", label: "Fonctionnalités" },
   { href: "#comment", label: "Comment ça marche" },
-  { href: "#tarifs", label: "Tarifs" },
+  { href: "#inclus", label: "L'offre" },
 ];
 
 const INCLUS = [
@@ -183,7 +183,7 @@ export default function Landing() {
                 {CTA}
               </Link>
               <p className="mt-3 text-center text-[12px] font-semibold text-ink-mute">
-                100 000 FCFA pour 6 mois, accès à tout l&apos;outil.
+                Tu remplis le formulaire, l&apos;équipe te recontacte pour activer ton abonnement.
               </p>
             </div>
 
@@ -293,22 +293,22 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ================= TARIFS ================= */}
-      <section id="tarifs" className="scroll-mt-20 bg-canvas py-16">
+      {/* ================= CE QUI EST INCLUS ================= */}
+      <section id="inclus" className="scroll-mt-20 bg-canvas py-16">
         <div className="mx-auto max-w-2xl px-5 text-center">
           <h2 className="text-3xl font-extrabold tracking-tight text-ink sm:text-4xl">
-            Un seul prix, <Hl>tout inclus</Hl>
+            Voici ce qui est <Hl>inclus</Hl>
           </h2>
-          <p className="mx-auto mt-3 max-w-md text-[14px] text-ink-soft">
-            Pas de version au rabais. Tu prends l&apos;outil complet, pendant six mois.
+          <p className="mx-auto mt-3 max-w-lg text-[14px] text-ink-soft">
+            Tout ça devient actif dans ton espace membre dès que l&apos;équipe t&apos;a recontacté et que
+            ton abonnement est en place.
           </p>
 
           <div className="mt-10 rounded-3xl border-2 border-ink bg-white p-8 text-left shadow-[8px_8px_0_0_#FFEE66]">
-            <p className="text-5xl font-extrabold tracking-tight text-ink">
-              100 000 FCFA
-              <span className="mt-1 block text-base font-bold text-ink-mute">pour 6 mois d&apos;accès</span>
+            <p className="text-[11px] font-bold uppercase tracking-wider text-ink-mute">
+              Inclus dans l&apos;abonnement
             </p>
-            <ul className="mt-7 space-y-3">
+            <ul className="mt-5 space-y-3">
               {INCLUS.map((f) => (
                 <li key={f} className="flex items-start gap-2.5 text-[14px] text-ink-soft">
                   <IconCheck size={16} className="mt-0.5 shrink-0 text-emerald-600" />

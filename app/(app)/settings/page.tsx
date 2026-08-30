@@ -427,9 +427,7 @@ export default function SettingsPage() {
                     {plan === "Gratuit" ? "Votre plan actuel" : "Gratuit"}
                   </Badge>
                 </div>
-                <p className="mt-1 text-2xl font-bold text-ink">
-                  0 €<span className="text-sm font-medium text-ink-mute"> / mois</span>
-                </p>
+                <p className="mt-1 text-[13px] font-medium text-ink-mute">Découverte de l&apos;outil</p>
                 <ul className="mt-5 space-y-2.5">
                   {freeFeatures.map((f) => (
                     <li key={f} className="flex items-start gap-2 text-[13px] text-ink-soft">
@@ -457,8 +455,8 @@ export default function SettingsPage() {
                     <Badge tone="violet">Recommandé</Badge>
                   )}
                 </div>
-                <p className="mt-1 text-2xl font-bold text-ink">
-                  19 €<span className="text-sm font-medium text-ink-mute"> / mois</span>
+                <p className="mt-1 text-[13px] font-medium text-ink-mute">
+                  Accès complet, activé par l&apos;équipe
                 </p>
                 <ul className="mt-5 space-y-2.5">
                   {proFeatures.map((f) => (

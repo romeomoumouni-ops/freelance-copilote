@@ -56,7 +56,7 @@ export default function Abonnement() {
   return (
     <main className="min-h-screen bg-white">
       <div className="bg-brand px-4 py-2 text-center text-[12px] font-bold text-ink">
-        Abonnement Freelance Copilote : 100 000 FCFA pour 6 mois
+        Abonnement Freelance Copilote : remplis le formulaire, l&apos;équipe te recontacte
       </div>
 
       <nav className="mx-auto flex max-w-5xl items-center justify-between px-5 py-6">
@@ -167,9 +167,12 @@ export default function Abonnement() {
         <aside className="lg:pt-4">
           <div className="rounded-3xl bg-canvas p-6 sm:p-7">
             <p className="text-[11px] font-bold uppercase tracking-wider text-ink-mute">Ton abonnement</p>
-            <p className="mt-2 text-4xl font-extrabold tracking-tight text-ink">
-              100 000 FCFA
-              <span className="block text-base font-bold text-ink-mute">pour 6 mois d&apos;accès</span>
+            <p className="mt-2 text-[18px] font-extrabold leading-snug tracking-tight text-ink">
+              Voici ce qui est inclus dans l&apos;outil
+            </p>
+            <p className="mt-2 text-[13px] leading-relaxed text-ink-soft">
+              Tout ça sera actif dès que l&apos;équipe t&apos;aura recontacté et que tu auras fait ton
+              abonnement.
             </p>
             <ul className="mt-6 space-y-3">
               {INCLUS.map((f) => (
