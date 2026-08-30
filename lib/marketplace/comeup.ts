@@ -1,5 +1,5 @@
 /* ============================================================
-   Scraper ComeUp — lecture de données PUBLIQUES uniquement.
+   Scraper ComeUp : lecture de données PUBLIQUES uniquement.
    ComeUp rend ses pages côté serveur : simple fetch + parsing,
    sans navigateur ni proxy. XOF est fixé à l'EUR (1 € = 655,957 XOF)
    donc les prix affichés en F CFA sont convertis exactement en EUR.

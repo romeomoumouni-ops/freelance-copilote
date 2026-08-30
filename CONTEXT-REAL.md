@@ -1,10 +1,10 @@
-# Freelance Copilot — Contrat de données RÉELLES (V2)
+# Freelance Copilot : Contrat de données RÉELLES (V2)
 
 Le SaaS n'utilise plus de fausses données. Toute la donnée vient d'un vrai scraping ComeUp
 (pages publiques lues en direct) + un moteur d'analyse. **Interdiction absolue d'importer `@/lib/data`**
 (ancien module de démo) dans les pages. Utilisez `useProfile()` et `@/lib/client`.
 
-## Le profil analysé — `useProfile()` (contexte global)
+## Le profil analysé : `useProfile()` (contexte global)
 
 ```ts
 import { useProfile } from "@/components/ProfileProvider";
@@ -13,7 +13,7 @@ const { analysis, hydrated, loading, error, analyze, clear } = useProfile();
 
 - `hydrated` : false tant que le localStorage n'est pas relu (afficher un skeleton bref si `!hydrated`).
 - `analysis` : `ProfileAnalysis | null`. **Si `null` (et `hydrated`), afficher `<EmptyProfile />`**
-  (`import EmptyProfile from "@/components/EmptyProfile"`) — jamais un écran vide, jamais de fausses données.
+  (`import EmptyProfile from "@/components/EmptyProfile"`) : jamais un écran vide, jamais de fausses données.
 - `analyze(url)` : lance une vraie analyse (utilisé surtout par l'onboarding).
 - `clear()` : oublie le profil.
 
@@ -53,7 +53,7 @@ Recommendation = { id, icon, category, title, description,
 
 Types importables : `import type { ProfileAnalysis, Gig, MarketStats } from "@/lib/client"`.
 
-## Appels API — `@/lib/client`
+## Appels API : `@/lib/client`
 
 ```ts
 import { getStatus, getCategories, getMarket, getIdeas, getCompetitors, generate } from "@/lib/client";

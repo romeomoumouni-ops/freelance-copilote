@@ -1,5 +1,5 @@
 /* ============================================================
-   Modèle de données normalisé — commun à ComeUp et Fiverr.
+   Modèle de données normalisé : commun à ComeUp et Fiverr.
    TOUT le SaaS raisonne sur ces types, jamais sur du HTML brut.
    ============================================================ */
 

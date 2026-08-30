@@ -153,7 +153,7 @@ export default function Landing() {
 
       {/* ================= HERO ================= */}
       <section className="relative overflow-hidden">
-        {/* blobs de fond doux — hauts uniquement, pour laisser la scène héro sur blanc pur */}
+        {/* blobs de fond doux : hauts uniquement, pour laisser la scène héro sur blanc pur */}
         <div className="pointer-events-none absolute -left-36 -top-16 h-64 w-64 rounded-full bg-brand/25 blur-3xl" />
         <div className="pointer-events-none absolute -right-36 -top-20 h-64 w-64 rounded-full bg-primary-100 blur-3xl" />
 
@@ -238,7 +238,7 @@ export default function Landing() {
 
           {/* --- centre : carte analyseur (gauche) + photo du fondateur (centre) --- */}
           <div className="relative flex flex-col items-center lg:flex-row lg:items-end lg:justify-center lg:gap-0">
-            {/* PHOTO MOBILE — compacte, glissée derrière le haut de la carte */}
+            {/* PHOTO MOBILE : compacte, glissée derrière le haut de la carte */}
             <div className="relative z-0 -mb-7 flex w-full justify-center lg:hidden">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
@@ -388,7 +388,7 @@ export default function Landing() {
               )}
             </div>
 
-            {/* PHOTO DU FONDATEUR — au centre, chevauche la carte (comme la référence) */}
+            {/* PHOTO DU FONDATEUR : au centre, chevauche la carte (comme la référence) */}
             <div className="relative z-10 hidden w-[330px] shrink-0 lg:-ml-20 lg:block">
               {/* nappe bleu clair discrète, côté droit, au niveau de l'épaule (loin des bras posés) */}
               <div className="pointer-events-none absolute -right-6 top-[20%] z-0 h-52 w-24 rounded-full bg-[#B9CDFF]/40 blur-2xl" />

@@ -40,7 +40,7 @@ export default function Sidebar({
           open ? "translate-x-0" : "-translate-x-full"
         )}
       >
-        {/* Wordmark — style ComeUp : Montserrat bold + surligné jaune */}
+        {/* Wordmark : style ComeUp : Montserrat bold + surligné jaune */}
         <div className="flex items-center justify-between px-5 pb-2 pt-6">
           <Link href="/profile" className="block">
             <span className="text-[19px] font-extrabold leading-tight tracking-tight text-ink">
@@ -64,7 +64,7 @@ export default function Sidebar({
           </button>
         </div>
 
-        {/* Navigation — 3 onglets, sans icônes */}
+        {/* Navigation : 3 onglets, sans icônes */}
         <nav className="mt-5 flex-1 space-y-1 overflow-y-auto px-3">
           {nav.map((item) => {
             const active = pathname.startsWith(item.href);

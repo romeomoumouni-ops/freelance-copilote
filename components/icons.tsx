@@ -39,7 +39,7 @@ function S({
 const soft = { fill: "currentColor", fillOpacity: 0.16, stroke: "none" } as const;
 const dot = { fill: "currentColor", stroke: "none" } as const;
 
-/* ================= ICÔNES DE CONTENU — DUOTONE ================= */
+/* ================= ICÔNES DE CONTENU : DUOTONE ================= */
 
 export const IconSparkles = (p: IconProps) => (
   <S {...p}>
@@ -333,7 +333,7 @@ export const IconSearch = (p: IconProps) => (
   </S>
 );
 
-/* ================= MICRO-CONTRÔLES — TRAIT FIN ================= */
+/* ================= MICRO-CONTRÔLES : TRAIT FIN ================= */
 
 export const IconMenu = (p: IconProps) => (
   <S {...p}>

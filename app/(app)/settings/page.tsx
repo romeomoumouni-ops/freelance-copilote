@@ -346,7 +346,7 @@ export default function SettingsPage() {
                     icon={<IconTrash size={15} />}
                     onClick={() => {
                       clear();
-                      toast("Profil oublié — vous pouvez relancer une analyse", "warning");
+                      toast("Profil oublié, vous pouvez relancer une analyse", "warning");
                     }}
                   >
                     Oublier ce profil
@@ -479,7 +479,7 @@ export default function SettingsPage() {
                       full
                       onClick={() => {
                         setPlan("Pro");
-                        toast("Paiement simulé — Pro activé", "success");
+                        toast("Paiement simulé : Pro activé", "success");
                       }}
                     >
                       Passer en Pro

@@ -5,13 +5,13 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
-/* Conseils — l'expert ComeUp.
+/* Conseils : l'expert ComeUp.
    Avec ANTHROPIC_API_KEY : réponse rédigée par Claude, ancrée sur le contexte réel.
    Sans clé : réponses d'expert par règles, nourries du même contexte réel. */
 
 const SYSTEM = `Tu es un expert de la marketplace ComeUp (ex-5euros.com), consultant pour vendeurs freelances.
 Tu réponds en français, tutoiement, concret et actionnable, 150 mots max.
-Tu t'appuies UNIQUEMENT sur le contexte chiffré fourni (profil + marché du vendeur) quand il existe — jamais de chiffres inventés.
+Tu t'appuies UNIQUEMENT sur le contexte chiffré fourni (profil + marché du vendeur) quand il existe, jamais de chiffres inventés.
 Termine toujours par UNE action à faire aujourd'hui.`;
 
 interface Ctx {
@@ -42,14 +42,14 @@ function ruleAnswer(q: string, c: Ctx): string {
     return `Le bon prix sur ComeUp se cale sur la médiane de ta niche, pas sur ton intuition. Analyse d'abord ton profil (onglet Analyse) pour que je te donne tes chiffres exacts.${action("lance ton analyse pour connaître le prix médian de ta niche.")}`;
   }
   if (/avis|note|étoile|etoile/.test(lq)) {
-    return `Sur ComeUp, le volume d'avis est le premier facteur de classement — c'est ta preuve de ventes.${
+    return `Sur ComeUp, le volume d'avis est le premier facteur de classement, c'est ta preuve de ventes.${
       c.myReviews != null && c.reviewsMax ? ` Ton service phare compte ${c.myReviews} avis, le leader de ta niche en a ${c.reviewsMax}.` : ""
     } La méthode : livrer vite et propre, puis demander l'avis À CHAQUE livraison avec un message personnalisé (« Si le résultat te plaît, un avis m'aiderait énormément 🙏 »).${action("prépare ton message type de demande d'avis et envoie-le à tes 3 derniers clients.")}`;
   }
   if (/commande|vendre|vente|client|démarrer|demarrer|lancer/.test(lq)) {
     return `Les premières commandes ComeUp viennent de 3 leviers : un titre avec les mots-clés que les acheteurs tapent vraiment${
       c.missingKeywords?.length ? ` (il te manque : ${c.missingKeywords.slice(0, 3).join(", ")})` : ""
-    }, une miniature pro qui donne envie de cliquer, et un prix d'entrée légèrement sous la médiane pour tes 10 premières ventes — puis tu remontes.${action("va dans « Créer mon profil » et génère ta miniature + ta page de vente.")}`;
+    }, une miniature pro qui donne envie de cliquer, et un prix d'entrée légèrement sous la médiane pour tes 10 premières ventes, puis tu remontes.${action("va dans « Créer mon profil » et génère ta miniature + ta page de vente.")}`;
   }
   if (/titre|mot[- ]?cl|seo|visib|classement/.test(lq)) {
     return `Ton titre est ton SEO sur ComeUp : les acheteurs cherchent par mots-clés, et l'algorithme classe par pertinence + ventes.${

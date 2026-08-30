@@ -1,5 +1,5 @@
 /* ============================================================
-   Couche IA — Claude en option, repli sur templates sinon.
+   Couche IA : Claude en option, repli sur templates sinon.
    Objectif : les fonctionnalités marchent SANS clé (génération par
    templates nourris de VRAIES données), et deviennent meilleures
    AVEC une clé ANTHROPIC_API_KEY (rédaction par Claude, contexte réel).
@@ -49,7 +49,7 @@ export async function generateDescription(input: {
   const { gig, market, keywords } = input;
   if (hasAI()) {
     const prompt = `Réécris la description du service ci-dessous pour vendre plus, en t'appuyant sur les meilleurs vendeurs du marché.
-Service: "${gig.title}" — prix ${gig.price} €, note ${gig.rating ?? "?"} (${gig.reviews} avis).
+Service: "${gig.title}", prix ${gig.price} €, note ${gig.rating ?? "?"} (${gig.reviews} avis).
 Marché "${market.label}": prix médian ${market.price.median} €, note moyenne ${market.ratingAvg}/5.
 Mots-clés qui dominent le marché: ${keywords.join(", ")}.
 Structure: accroche (problème → solution) ; ce qui est inclus (liste) ; pourquoi moi (preuves) ; appel à l'action. 180 mots max.`;
@@ -70,7 +70,7 @@ Ce qui est inclus :
 • ${gig.deliveryDays ? `Livraison en ${gig.deliveryDays} jours` : "Livraison rapide"}, révisions incluses
 • Un accompagnement clair, même si vous débutez
 
-Pourquoi me faire confiance : ${gig.reviews > 0 ? `${gig.reviews} avis clients` : "des clients satisfaits"}${gig.rating ? ` et une note de ${gig.rating}/5` : ""}. Le marché facture en moyenne ${market.price.median} € pour ce type de prestation — vous savez donc que vous investissez au juste prix.
+Pourquoi me faire confiance : ${gig.reviews > 0 ? `${gig.reviews} avis clients` : "des clients satisfaits"}${gig.rating ? ` et une note de ${gig.rating}/5` : ""}. Le marché facture en moyenne ${market.price.median} € pour ce type de prestation. Vous savez donc que vous investissez au juste prix.
 
 Commandez maintenant, ou écrivez-moi votre projet : je vous réponds rapidement.`;
   return { text, source: "template" };
@@ -114,7 +114,7 @@ function templateReply(tone: ReplyTone, ctx?: { seller?: string; price?: number;
     case "Courte":
       return `Bonjour ! Oui, c'est tout à fait possible. Je vous livre un travail professionnel en ${delay} jours, révisions incluses. Je vous envoie le détail ?`;
     case "Persuasive":
-      return `Bonjour,\n\nExcellent projet. Ce que mes clients apprécient : un rendu prêt en ${delay} jours, un accompagnement clair et un résultat qui inspire confiance. Je n'ai que quelques créneaux cette semaine — je vous en réserve un ?\n\n${sig}`;
+      return `Bonjour,\n\nExcellent projet. Ce que mes clients apprécient : un rendu prêt en ${delay} jours, un accompagnement clair et un résultat qui inspire confiance. Je n'ai que quelques créneaux cette semaine, je vous en réserve un ?\n\n${sig}`;
     case "Premium":
       return `Bonjour,\n\nPour un résultat à la hauteur de votre image, je vous recommande ma formule complète : travail sur mesure, optimisation et suivi après livraison. C'est le choix de la majorité de mes clients pros. Je vous prépare la proposition ?\n\nBien à vous,\n${sig}`;
     case "Relance":

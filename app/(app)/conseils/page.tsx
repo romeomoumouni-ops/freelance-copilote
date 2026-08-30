@@ -28,7 +28,7 @@ export default function ConseilsPage() {
 
   useEffect(() => {
     const hello = analysis
-      ? `Salut ${analysis.profile.displayName ?? ""} 👋 Je suis ton expert ComeUp. J'ai ton analyse sous les yeux : ${analysis.globalScore} % de réussite sur le marché « ${analysis.market.label} ». Pose-moi n'importe quelle question — je te réponds avec tes vrais chiffres.`
+      ? `Salut ${analysis.profile.displayName ?? ""} 👋 Je suis ton expert ComeUp. J'ai ton analyse sous les yeux : ${analysis.globalScore} % de réussite sur le marché « ${analysis.market.label} ». Pose-moi n'importe quelle question, je te réponds avec tes vrais chiffres.`
       : "Salut 👋 Je suis ton expert ComeUp. Pose-moi tes questions (prix, avis, visibilité, premières commandes…). Astuce : lance d'abord ton analyse pour que je te réponde avec tes vrais chiffres.";
     setMsgs([{ role: "expert", text: hello }]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -69,7 +69,7 @@ export default function ConseilsPage() {
       const data = await res.json();
       setMsgs((m) => [...m, { role: "expert", text: data.text ?? data.error ?? "Réessaie dans un instant." }]);
     } catch {
-      setMsgs((m) => [...m, { role: "expert", text: "Petit souci de connexion — réessaie." }]);
+      setMsgs((m) => [...m, { role: "expert", text: "Petit souci de connexion, réessaie." }]);
     } finally {
       setBusy(false);
     }
@@ -79,7 +79,7 @@ export default function ConseilsPage() {
     <>
       <PageHeader
         title="Conseils"
-        subtitle="Ton expert ComeUp, disponible 24h/24 — des réponses personnalisées, appuyées sur tes vrais chiffres."
+        subtitle="Ton expert ComeUp, disponible 24h/24 : des réponses personnalisées, appuyées sur tes vrais chiffres."
       />
 
       <Card flush className="flex h-[calc(100vh-15rem)] min-h-[420px] flex-col">
@@ -91,7 +91,7 @@ export default function ConseilsPage() {
           <div>
             <p className="text-[13px] font-extrabold text-ink">Expert ComeUp</p>
             <p className="text-[11px] text-ink-mute">
-              {analysis ? `Contexte chargé : ${analysis.globalScore} % · ${analysis.market.label}` : "Sans analyse — réponses générales"}
+              {analysis ? `Contexte chargé : ${analysis.globalScore} % · ${analysis.market.label}` : "Sans analyse : réponses générales"}
             </p>
           </div>
           {!analysis && (

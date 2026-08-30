@@ -1,4 +1,4 @@
-/* Review mining — à partir de VRAIS avis clients scrapés.
+/* Review mining : à partir de VRAIS avis clients scrapés.
    On détecte les thèmes récurrents (points forts, points faibles) par
    dictionnaires de mots-clés. Sur ComeUp les avis sont surtout positifs :
    les points forts révèlent ce que les clients valorisent (donc ce qu'il

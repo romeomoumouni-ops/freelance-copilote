@@ -1,4 +1,4 @@
-/* Client Supabase — CÔTÉ SERVEUR UNIQUEMENT (service_role).
+/* Client Supabase : CÔTÉ SERVEUR UNIQUEMENT (service_role).
    Projet : « Freelance copilote » (ref cdlcokutlsrvrbkvojfb, eu-west-1).
    RLS deny-all sur toutes les tables : la clé anon n'accède à rien,
    seul le serveur écrit/lit via la clé service_role (.env.local).

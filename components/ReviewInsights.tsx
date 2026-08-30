@@ -61,7 +61,7 @@ export default function ReviewInsights({
         <div>
           <p className="mb-1.5 flex items-center gap-1.5 text-[12px] font-semibold text-emerald-700">
             <IconThumbsUp size={13} />
-            {yours ? "Ce que vos clients apprécient" : "Ce que ses clients apprécient — à mettre en avant chez vous"}
+            {yours ? "Ce que vos clients apprécient" : "Ce que ses clients apprécient, à mettre en avant chez vous"}
           </p>
           <div className="flex flex-wrap gap-1.5">
             {data.praises.map((p) => (
@@ -77,7 +77,7 @@ export default function ReviewInsights({
         <div>
           <p className="mb-1.5 flex items-center gap-1.5 text-[12px] font-semibold text-amber-700">
             <IconAlert size={13} />
-            {yours ? "Points de vigilance dans vos avis" : "Reproches de ses clients — votre opportunité"}
+            {yours ? "Points de vigilance dans vos avis" : "Reproches de ses clients : votre opportunité"}
           </p>
           <div className="flex flex-wrap gap-1.5">
             {data.complaints.map((p) => (

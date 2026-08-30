@@ -1,4 +1,4 @@
-/* "Coup de gueule du copilote" — un audit cash mais juste, basé sur les
+/* "Coup de gueule du copilote" : un audit cash mais juste, basé sur les
    VRAIES données du profil. Franc, avec du caractère, mais chaque pique
    se termine par une action concrète. Aucun chiffre inventé. */
 

@@ -14,7 +14,7 @@ import { useProfile } from "@/components/ProfileProvider";
 import { IconRefresh, IconDownload, IconCopy, IconAlert, IconCheck } from "@/components/icons";
 
 /* ============================================================
-   Créer mon profil ComeUp — 3 ateliers :
+   Créer mon profil ComeUp : 3 ateliers :
    1. Photo de profil générée par IA (selon ta niche)
    2. Services & miniatures (selon ce qui marche sur ComeUp)
    3. Page de vente (description calibrée sur ton marché réel)
@@ -71,7 +71,7 @@ export default function CreatePage() {
     <>
       <PageHeader
         title="Créer mon profil ComeUp"
-        subtitle="Photo de profil, services, miniatures et pages de vente — générés selon ta niche et ce qui marche vraiment sur ComeUp."
+        subtitle="Photo de profil, services, miniatures et pages de vente, générés selon ta niche et ce qui marche vraiment sur ComeUp."
       />
 
       <div className="mb-5 flex flex-wrap items-center gap-3">
@@ -126,9 +126,9 @@ function PhotoAtelier({ niche, nicheLabel }: { niche: string; nicheLabel: string
       a.download = name;
       a.click();
       URL.revokeObjectURL(a.href);
-      toast("Photo téléchargée — ajoute-la sur ton profil ComeUp", "success");
+      toast("Photo téléchargée, ajoute-la sur ton profil ComeUp", "success");
     } catch {
-      toast("Téléchargement impossible — réessaie", "warning");
+      toast("Téléchargement impossible, réessaie", "warning");
     }
   }
 
@@ -163,7 +163,7 @@ function PhotoAtelier({ niche, nicheLabel }: { niche: string; nicheLabel: string
         {!started ? (
           <div className="mt-5 flex flex-col items-center rounded-2xl bg-primary-50 py-10 text-center">
             <p className="max-w-sm text-[13px] text-ink-soft">
-              4 propositions de photos seront générées par IA — gratuit, en quelques secondes.
+              4 propositions de photos seront générées par IA. Gratuit, en quelques secondes.
             </p>
             <Button variant="primary" className="mt-4" onClick={() => setStarted(true)}>
               Générer mes photos
@@ -195,7 +195,7 @@ function PhotoAtelier({ niche, nicheLabel }: { niche: string; nicheLabel: string
             </div>
             <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
               <p className="text-[12px] text-ink-mute">
-                {loadedCount < 4 ? `Génération en cours… ${loadedCount}/4` : "4 propositions prêtes — survole pour télécharger."}
+                {loadedCount < 4 ? `Génération en cours… ${loadedCount}/4` : "4 propositions prêtes, survole pour télécharger."}
               </p>
               <Button
                 variant="secondary"
@@ -213,7 +213,7 @@ function PhotoAtelier({ niche, nicheLabel }: { niche: string; nicheLabel: string
         )}
       </Card>
       <p className="text-[11px] text-ink-mute">
-        Astuce : une vraie photo de toi bien éclairée reste l&apos;idéal — ces visuels IA sont parfaits en attendant, ou comme avatar de marque.
+        Astuce : une vraie photo de toi bien éclairée reste l&apos;idéal. Ces visuels IA sont parfaits en attendant, ou comme avatar de marque.
       </p>
     </div>
   );
@@ -259,8 +259,8 @@ function ServicesAtelier({ niche, nicheLabel, sellerName }: { niche: string; nic
   const suggestions: { title: string; why: string }[] = market
     ? [
         { title: titles[0], why: `Aligné sur les mots-clés qui dominent ce marché : ${keywords.slice(0, 4).join(", ")}` },
-        { title: titles[1], why: `Le délai express se démarque — prix médian du marché : ${market.price.median} €` },
-        { title: titles[2], why: `Positionnement premium — les leaders cumulent jusqu'à ${market.reviews.max} avis` },
+        { title: titles[1], why: `Le délai express se démarque. Prix médian du marché : ${market.price.median} €` },
+        { title: titles[2], why: `Positionnement premium. Les leaders cumulent jusqu'à ${market.reviews.max} avis` },
       ]
     : [];
 
@@ -309,10 +309,10 @@ function ServicesAtelier({ niche, nicheLabel, sellerName }: { niche: string; nic
         ctx.fillText(`@${sellerName}`, 72, 60);
       }
       setThumbState("ready");
-      toast("Miniature générée — télécharge-la pour ton service", "success");
+      toast("Miniature générée, télécharge-la pour ton service", "success");
     } catch {
       setThumbState("idle");
-      toast("Génération du fond impossible — réessaie", "warning");
+      toast("Génération du fond impossible, réessaie", "warning");
     }
   }
 
@@ -331,7 +331,7 @@ function ServicesAtelier({ niche, nicheLabel, sellerName }: { niche: string; nic
   return (
     <div className="animate-fade-up space-y-4">
       <Card>
-        <h3 className="text-sm font-extrabold text-ink">Services conseillés — niche « {nicheLabel} »</h3>
+        <h3 className="text-sm font-extrabold text-ink">Services conseillés pour la niche « {nicheLabel} »</h3>
         {loading && (
           <div className="mt-4 flex items-center gap-3 text-[13px] text-ink-mute">
             <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary-100 border-t-ink" />
@@ -412,7 +412,7 @@ function ServicesAtelier({ niche, nicheLabel, sellerName }: { niche: string; nic
   );
 }
 
-/** Titres rédigés (français propre) par niche — les vraies données du marché
+/** Titres rédigés (français propre) par niche : les vraies données du marché
     servent à justifier et prioriser, pas à assembler des phrases. */
 const NICHE_TITLES: Record<string, [string, string, string]> = {
   "site-developpement": [
@@ -578,7 +578,7 @@ function VenteAtelier({ niche, nicheLabel }: { niche: string; nicheLabel: string
         {!text && !loading && (
           <div className="flex h-full min-h-[220px] flex-col items-center justify-center text-center">
             <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-50 text-xl font-extrabold text-ink">¶</span>
-            <p className="mt-3 max-w-xs text-[13px] text-ink-mute">Ta page de vente apparaîtra ici — structurée pour convertir, prête à coller sur ComeUp.</p>
+            <p className="mt-3 max-w-xs text-[13px] text-ink-mute">Ta page de vente apparaîtra ici, structurée pour convertir, prête à coller sur ComeUp.</p>
           </div>
         )}
         {loading && (
@@ -601,7 +601,7 @@ function VenteAtelier({ niche, nicheLabel }: { niche: string; nicheLabel: string
                 icon={<IconCopy size={14} />}
                 onClick={() => {
                   navigator.clipboard.writeText(text);
-                  toast("Page de vente copiée — colle-la sur ComeUp", "success");
+                  toast("Page de vente copiée, colle-la sur ComeUp", "success");
                 }}
               >
                 Copier

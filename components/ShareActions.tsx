@@ -22,7 +22,7 @@ export default function ShareActions({ text, className }: { text: string; classN
     }
     try {
       await navigator.clipboard.writeText(text);
-      toast("Texte copié — colle-le dans WhatsApp, une story ou un post", "success");
+      toast("Texte copié, colle-le dans WhatsApp, une story ou un post", "success");
     } catch {
       toast("Copie impossible sur ce navigateur", "warning");
     }

@@ -1,5 +1,5 @@
 /* ============================================================
-   Moteur d'analyse — 100 % données réelles.
+   Moteur d'analyse : 100 % données réelles.
    Compare un profil vendeur (scrapé) à son marché (scrapé) et
    produit des scores + recommandations chiffrées et actionnables.
    Aucune donnée inventée : chaque score cite ses chiffres.
@@ -104,7 +104,7 @@ export function analyzeProfile(profile: SellerProfile, market: MarketStats): Pro
     recommendation:
       myAvgRating < market.ratingAvg
         ? "Soignez les livraisons et la communication : votre note est sous la moyenne du marché."
-        : "Votre note est un atout — mettez-la en avant dans vos descriptions.",
+        : "Votre note est un atout, mettez-la en avant dans vos descriptions.",
   };
 
   // 3. Prix (positionnement vs médiane marché)

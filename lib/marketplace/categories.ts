@@ -1,6 +1,6 @@
 /* Catégories ComeUp ciblées par le copilote (slugs réels vérifiés).
    C'est le périmètre que le crawler balaie régulièrement et que
-   l'explorateur de marché propose. On ne scanne PAS "tout ComeUp" —
+   l'explorateur de marché propose. On ne scanne PAS "tout ComeUp" :
    on couvre en profondeur les niches qui comptent pour nos utilisateurs. */
 
 export interface CategoryDef {

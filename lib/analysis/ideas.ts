@@ -1,4 +1,4 @@
-/* Idées de services — dérivées de VRAIES statistiques de marché.
+/* Idées de services : dérivées de VRAIES statistiques de marché.
    Principe : on cherche les niches où la demande est forte mais où
    il reste de la place (opportunité élevée), et on les présente comme
    des pistes concrètes, chiffrées. Renouvelées quand le crawler tourne. */
@@ -36,7 +36,7 @@ export function computeServiceIdeas(markets: MarketStats[], count = 3): ServiceI
       category: m.label,
       categorySlug: m.query,
       title: `Lancez un service « ${m.label} »`,
-      rationale: `Demande ${m.demand}/100, saturation ${m.saturation}/100 (opportunité ${m.opportunity}/100). Prix médian ${m.price.median} €. Les meilleurs vendeurs cumulent jusqu'à ${m.reviews.max} avis — le marché achète vraiment.`,
+      rationale: `Demande ${m.demand}/100, saturation ${m.saturation}/100 (opportunité ${m.opportunity}/100). Prix médian ${m.price.median} €. Les meilleurs vendeurs cumulent jusqu'à ${m.reviews.max} avis : le marché achète vraiment.`,
       demand: m.demand,
       saturation: m.saturation,
       opportunity: m.opportunity,

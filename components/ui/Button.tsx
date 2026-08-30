@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 
 export type ButtonVariant =
-  | "primary" // noir — CTA principal
+  | "primary" // noir : CTA principal
   | "violet" // violet plein
   | "secondary" // blanc bordé
   | "soft" // violet très clair

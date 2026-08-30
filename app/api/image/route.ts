@@ -4,7 +4,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
-/* Proxy de génération d'images IA (pollinations.ai — gratuit, sans clé).
+/* Proxy de génération d'images IA (pollinations.ai : gratuit, sans clé).
    Servi depuis notre origine → utilisable dans un <canvas> (miniatures)
    et téléchargeable sans souci de CORS. */
 export async function GET(req: Request) {
@@ -32,6 +32,6 @@ export async function GET(req: Request) {
       },
     });
   } catch {
-    return NextResponse.json({ error: "Génération d'image indisponible — réessaie." }, { status: 502 });
+    return NextResponse.json({ error: "Génération d'image indisponible, réessaie." }, { status: 502 });
   }
 }

@@ -52,7 +52,7 @@ curl -X POST http://localhost:3005/api/crawl -H "Authorization: Bearer $CRAWL_SE
 ## Note légale
 
 Le copilote lit uniquement des **données publiques** (comme un visiteur), avec un rythme respectueux et du cache.
-C'est de l'analyse de marché — comme le font les outils SEO. Le scraping reste contraire aux CGU des plateformes ;
+C'est de l'analyse de marché : comme le font les outils SEO. Le scraping reste contraire aux CGU des plateformes ;
 à utiliser en connaissance de cause. Aucune donnée personnelle n'est stockée inutilement.
 
 ## Pages

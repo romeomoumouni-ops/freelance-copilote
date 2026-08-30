@@ -7,7 +7,7 @@ import type { ReactNode } from "react";
 type StatCardProps = {
   label: string;
   value: string;
-  /** ex: "+12 %" — préfixé du bon signe */
+  /** ex: "+12 %" avec le bon signe */
   delta?: string;
   deltaPositive?: boolean;
   deltaLabel?: string;

@@ -43,7 +43,7 @@ async function run(url: string) {
     }
   }
 
-  // ComeUp — données réelles en direct
+  // ComeUp : données réelles en direct
   const profile = await getSellerProfile(url);
   if (!profile.gigs.length) {
     return {
@@ -55,7 +55,7 @@ async function run(url: string) {
   }
   const market = await marketForProfile(profile);
   const analysis = analyzeProfile(profile, market);
-  // journal d'usage (Supabase si configuré, sinon no-op) — jamais bloquant
+  // journal d'usage (Supabase si configuré, sinon no-op) : jamais bloquant
   void logAnalysis({
     url,
     username: profile.username,

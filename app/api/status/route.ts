@@ -11,7 +11,7 @@ export async function GET() {
     platform: "comeup",
     available: true,
     mode: "live",
-    message: "ComeUp connecté — lecture des pages publiques en direct.",
+    message: "ComeUp connecté : lecture des pages publiques en direct.",
   };
   return NextResponse.json({
     sources: [comeup, getFiverrStatus()],

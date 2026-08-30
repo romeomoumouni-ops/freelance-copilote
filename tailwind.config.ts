@@ -12,7 +12,7 @@ const config: Config = {
           mute: "#8B8798",
         },
         line: "#EAE8E1",
-        /* Jaune ComeUp — extrait de comeup.com (--bs-yellow: #fe6, --bs-yellow-100: #fffde8) */
+        /* Jaune ComeUp : extrait de comeup.com (--bs-yellow: #fe6, --bs-yellow-100: #fffde8) */
         primary: {
           50: "#FFFDE8",
           100: "#FFF9C2",
@@ -26,7 +26,7 @@ const config: Config = {
           900: "#713F12",
         },
         brand: "#FFEE66",
-        /* Bleu marine d'accent — harmonie jaune/navy */
+        /* Bleu marine d'accent : harmonie jaune/navy */
         navy: {
           DEFAULT: "#1E2A5A",
           soft: "#2C3B78",

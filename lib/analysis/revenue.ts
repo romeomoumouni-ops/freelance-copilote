@@ -1,9 +1,9 @@
-/* Estimation de revenu — le cœur du "Revenu X-Ray".
+/* Estimation de revenu : le cœur du "Revenu X-Ray".
    Principe honnête : le nombre d'avis est un proxy des commandes livrées.
    Toutes les commandes ne laissent pas d'avis (≈ 60 % le font sur les
    marketplaces), donc commandes estimées ≈ avis / 0,6. Revenu ≈ commandes
    × prix. C'est une ESTIMATION (comme estimer les gains d'un YouTubeur
-   à partir des vues publiques) — toujours présentée comme telle. */
+   à partir des vues publiques) : toujours présentée comme telle. */
 
 import type { Gig } from "@/lib/marketplace/types";
 
@@ -61,7 +61,7 @@ export function estimateRevenue(gigs: Gig[], seller: string | null = null): Reve
     topGig: perGig[0] ?? null,
     perGig,
     reviewRate: REVIEW_RATE,
-    note: "Estimation basée sur les avis publics (proxy des commandes) et les prix affichés. Toutes les commandes ne laissent pas d'avis — le chiffre réel peut différer.",
+    note: "Estimation basée sur les avis publics (proxy des commandes) et les prix affichés. Toutes les commandes ne laissent pas d'avis : le chiffre réel peut différer.",
   };
 }
 
