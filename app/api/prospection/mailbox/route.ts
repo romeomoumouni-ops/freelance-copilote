@@ -38,20 +38,38 @@ export async function POST(req: NextRequest) {
   const mailbox: MailboxSettings = { ...DEFAULT_MAILBOX, ...prev, email, fromName, appPassword, dailyCap };
 
   if (body.action === "test") {
+    let verified = false;
+    let verifyError = "";
     try {
       await verifyMailbox(mailbox);
+      verified = true;
       mailbox.verifiedAt = new Date().toISOString();
-      await saveMailbox(mailbox);
-      return NextResponse.json({ ok: true, verified: true });
     } catch (e) {
-      await saveMailbox(mailbox);
-      return NextResponse.json(
-        { error: "Connexion refusée : " + (e instanceof Error ? e.message : String(e)) },
-        { status: 502 }
-      );
+      verifyError = e instanceof Error ? e.message : String(e);
     }
+    // Sauvegarde STRICTE + relecture : on ne dit jamais « c'est prêt »
+    // si rien n'a été écrit (ex. variables Supabase absentes sur Vercel).
+    try {
+      await saveMailbox(mailbox);
+      const back = await getMailbox();
+      if (!back || back.email !== mailbox.email || (verified && !back.verifiedAt)) {
+        throw new Error(
+          "La sauvegarde n'a pas été relue : la base de données n'est pas branchée sur ce serveur. Sur Vercel, ajoute NEXT_PUBLIC_SUPABASE_URL et SUPABASE_SERVICE_ROLE_KEY puis redéploie."
+        );
+      }
+    } catch (e) {
+      return NextResponse.json({ error: e instanceof Error ? e.message : String(e) }, { status: 500 });
+    }
+    if (!verified) {
+      return NextResponse.json({ error: "Connexion refusée : " + verifyError }, { status: 502 });
+    }
+    return NextResponse.json({ ok: true, verified: true });
   }
 
-  await saveMailbox(mailbox);
+  try {
+    await saveMailbox(mailbox);
+  } catch (e) {
+    return NextResponse.json({ error: e instanceof Error ? e.message : String(e) }, { status: 500 });
+  }
   return NextResponse.json({ ok: true });
 }

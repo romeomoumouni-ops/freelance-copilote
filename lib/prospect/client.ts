@@ -7,9 +7,15 @@ export type { Campaign, CampaignStep, EventLog, Prospect, ProspectStatus, CallSc
 
 async function jf<T>(url: string, init?: RequestInit): Promise<T> {
   const res = await fetch(url, init);
-  const data = await res.json();
+  const text = await res.text();
+  let data: T & { error?: string };
+  try {
+    data = JSON.parse(text);
+  } catch {
+    throw new Error(`Erreur serveur (${res.status}). Réessaie, et préviens-nous si ça continue.`);
+  }
   if (!res.ok) throw new Error(data?.error || `Erreur ${res.status}`);
-  return data as T;
+  return data;
 }
 
 const json = (body: unknown): RequestInit => ({

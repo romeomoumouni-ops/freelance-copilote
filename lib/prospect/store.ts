@@ -2,10 +2,38 @@
    si la clé service est là, sinon fichiers .data/). Un seul espace de
    travail : l'app est mono-utilisateur, comme le reste du copilote. */
 
-import { cacheGet, cacheSet } from "@/lib/marketplace/store";
+import { promises as fs } from "fs";
+import path from "path";
+import { cacheGet } from "@/lib/marketplace/store";
+import { getAdminClient } from "@/lib/supabase";
 import type { Campaign, EventLog, MailboxSettings, Prospect } from "@/lib/prospect/types";
 
 const FOREVER = 1000 * 60 * 60 * 24 * 365 * 10;
+
+/* Écriture STRICTE : contrairement au cache marché (best effort), les
+   données de prospection ne doivent JAMAIS se perdre en silence. Si la
+   sauvegarde échoue (Supabase en erreur, ou pas de base branchée sur un
+   serveur au disque en lecture seule type Vercel), on lève une erreur
+   claire que les routes remontent à l'utilisateur. */
+async function setStrict<T>(key: string, value: T): Promise<void> {
+  const sb = getAdminClient();
+  if (sb) {
+    const { error } = await sb
+      .from("market_cache")
+      .upsert({ key, value, updated_at: new Date().toISOString() });
+    if (error) throw new Error("Sauvegarde impossible (Supabase) : " + error.message);
+    return;
+  }
+  try {
+    const dir = path.join(process.cwd(), ".data", "cache");
+    await fs.mkdir(dir, { recursive: true });
+    await fs.writeFile(path.join(dir, key + ".json"), JSON.stringify({ at: Date.now(), value }), "utf8");
+  } catch {
+    throw new Error(
+      "Sauvegarde impossible : la base de données n'est pas branchée sur ce serveur. Sur Vercel, ajoute les variables NEXT_PUBLIC_SUPABASE_URL et SUPABASE_SERVICE_ROLE_KEY puis redéploie."
+    );
+  }
+}
 
 const K = {
   prospects: "prospection_prospects",
@@ -28,7 +56,7 @@ export function getProspects(): Promise<Prospect[]> {
 }
 
 export async function saveProspects(list: Prospect[]): Promise<void> {
-  await cacheSet(K.prospects, list);
+  await setStrict(K.prospects, list);
 }
 
 export async function updateProspect(id: string, patch: Partial<Prospect>): Promise<Prospect | null> {
@@ -47,7 +75,7 @@ export function getCampaigns(): Promise<Campaign[]> {
 }
 
 export async function saveCampaigns(list: Campaign[]): Promise<void> {
-  await cacheSet(K.campaigns, list);
+  await setStrict(K.campaigns, list);
 }
 
 /* -------------------- boîte mail -------------------- */
@@ -57,7 +85,7 @@ export function getMailbox(): Promise<MailboxSettings | null> {
 }
 
 export async function saveMailbox(m: MailboxSettings): Promise<void> {
-  await cacheSet(K.mailbox, m);
+  await setStrict(K.mailbox, m);
 }
 
 /* -------------------- liste de suppression (désabonnés) -------------------- */
@@ -71,7 +99,7 @@ export async function suppress(email: string): Promise<void> {
   const e = email.trim().toLowerCase();
   if (!list.includes(e)) {
     list.push(e);
-    await cacheSet(K.suppression, list);
+    await setStrict(K.suppression, list);
   }
 }
 
@@ -87,7 +115,7 @@ export function getSentToday(): Promise<number> {
 
 export async function bumpSentToday(n = 1): Promise<number> {
   const v = (await getSentToday()) + n;
-  await cacheSet(K.sent(today()), v);
+  await setStrict(K.sent(today()), v);
   return v;
 }
 
@@ -103,9 +131,13 @@ export async function getSentSeries(days = 14): Promise<{ date: string; sent: nu
 /* -------------------- journal d'événements -------------------- */
 
 export async function logEvent(type: EventLog["type"], label: string): Promise<void> {
-  const list = await get<EventLog[]>(K.events, []);
-  list.unshift({ at: new Date().toISOString(), type, label });
-  await cacheSet(K.events, list.slice(0, 60));
+  try {
+    const list = await get<EventLog[]>(K.events, []);
+    list.unshift({ at: new Date().toISOString(), type, label });
+    await setStrict(K.events, list.slice(0, 60));
+  } catch {
+    /* journal best effort : ne bloque jamais un envoi */
+  }
 }
 
 export function getEvents(): Promise<EventLog[]> {

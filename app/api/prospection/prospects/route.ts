@@ -37,7 +37,11 @@ export async function POST(req: NextRequest) {
       signals: [],
     });
   }
-  await saveProspects([...added, ...list]);
+  try {
+    await saveProspects([...added, ...list]);
+  } catch (e) {
+    return NextResponse.json({ error: e instanceof Error ? e.message : String(e) }, { status: 500 });
+  }
   return NextResponse.json({ added: added.length, prospects: added });
 }
 
