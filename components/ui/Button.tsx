@@ -22,7 +22,7 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 const variants: Record<ButtonVariant, string> = {
   primary:
     "bg-ink text-white hover:bg-black active:scale-[0.98] shadow-[0_8px_20px_-8px_rgba(23,22,28,0.45)]",
-  /* CTA jaune ComeUp : fond #FFEE66, texte noir */
+  /* CTA jaune de la marque : fond #FFEE66, texte noir */
   violet:
     "bg-primary-300 text-ink hover:bg-primary-400 active:scale-[0.98] shadow-[0_8px_20px_-8px_rgba(202,138,4,0.45)]",
   secondary:

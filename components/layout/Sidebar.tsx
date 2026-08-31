@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { useProfile } from "@/components/ProfileProvider";
 import { IconX } from "@/components/icons";
 
 const groups: { title: string; items: { href: string; label: string; desc: string }[] }[] = [
@@ -17,14 +16,6 @@ const groups: { title: string; items: { href: string; label: string; desc: strin
       { href: "/mailbox", label: "Boîte mail", desc: "Ta connexion Gmail" },
     ],
   },
-  {
-    title: "Outils ComeUp",
-    items: [
-      { href: "/profile", label: "Analyse", desc: "Ton pourcentage de réussite" },
-      { href: "/create", label: "Créer mon profil", desc: "Photo, services, pages de vente" },
-      { href: "/conseils", label: "Conseils", desc: "Ton expert ComeUp répond" },
-    ],
-  },
 ];
 
 export default function Sidebar({
@@ -35,9 +26,6 @@ export default function Sidebar({
   onClose: () => void;
 }) {
   const pathname = usePathname();
-  const { analysis } = useProfile();
-  const name = analysis?.profile.displayName || "Ton profil";
-  const initials = (analysis?.profile.displayName || "?").slice(0, 2).toUpperCase();
 
   return (
     <>
@@ -55,7 +43,7 @@ export default function Sidebar({
           open ? "translate-x-0" : "-translate-x-full"
         )}
       >
-        {/* Wordmark : style ComeUp : Montserrat bold + surligné jaune */}
+        {/* Wordmark : Montserrat bold + surligné jaune */}
         <div className="flex items-center justify-between px-5 pb-2 pt-6">
           <Link href="/dashboard" className="block">
             <span className="text-[19px] font-extrabold leading-tight tracking-tight text-ink">
@@ -67,7 +55,7 @@ export default function Sidebar({
               </span>
             </span>
             <span className="mt-1 block text-[10px] font-semibold uppercase tracking-[0.14em] text-ink-mute">
-              prospection + comeup
+              prospection
             </span>
           </Link>
           <button
@@ -113,32 +101,17 @@ export default function Sidebar({
           ))}
         </nav>
 
-        {/* Profil + paramètres */}
-        <div className="space-y-1 border-t border-line p-4">
+        {/* Pied de barre */}
+        <div className="border-t border-line p-4">
           <div className="flex items-center gap-3 rounded-2xl px-2 py-1.5">
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand text-[12px] font-extrabold text-ink">
-              {initials}
+              FC
             </span>
             <div className="min-w-0">
-              <p className="truncate text-[13px] font-bold text-ink">{name}</p>
-              <p className="truncate text-[11px] text-ink-mute">
-                {analysis ? "Vendeur ComeUp" : "Profil non analysé"}
-              </p>
+              <p className="truncate text-[13px] font-bold text-ink">Mon espace</p>
+              <p className="truncate text-[11px] text-ink-mute">Prospection active</p>
             </div>
           </div>
-          <Link
-            href="/settings"
-            onClick={onClose}
-            className={cn(
-              "block rounded-lg px-2 py-1.5 text-[12px] font-semibold transition-colors",
-              pathname.startsWith("/settings") ? "text-ink" : "text-ink-mute hover:text-ink"
-            )}
-          >
-            Paramètres
-          </Link>
-          <p className="px-2 pt-1 text-[10px] leading-relaxed text-ink-mute/80">
-            Outil indépendant, non affilié à ComeUp.
-          </p>
         </div>
       </aside>
     </>

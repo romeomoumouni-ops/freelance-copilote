@@ -17,12 +17,12 @@ const INCLUS = [
   "Le mini-audit à envoyer qui prouve ton sérieux",
   "La boîte de réponses avec assistant pour conclure",
   "La connexion de ta boîte Gmail guidée pas à pas",
-  "Tes outils ComeUp : analyse de profil, photo, miniatures, pages de vente",
+  "Le suivi de ton pipeline : contacté, a répondu, RDV calé, client signé",
 ];
 
 const CTA = "Je suis freelance, je souhaite m'abonner à cet outil";
 
-/** Surligné jaune ComeUp */
+/** Surligné jaune */
 function Hl({ children }: { children: React.ReactNode }) {
   return (
     <span className="relative inline-block">
@@ -121,8 +121,8 @@ export default function Landing() {
           </h1>
           <p className="mx-auto mt-5 max-w-xl text-[15px] leading-relaxed text-ink-soft sm:text-base">
             Un abonnement, un espace de travail complet : des prospects trouvés et analysés sur leur vrai
-            site, des mails personnalisés qui obtiennent des réponses, des relances automatiques. Et tes
-            outils ComeUp restent inclus.
+            site, des mails personnalisés qui obtiennent des réponses, des relances automatiques. Toi,
+            tu réponds et tu signes.
           </p>
         </div>
 
@@ -248,7 +248,7 @@ export default function Landing() {
               {
                 icon: "/icon-expert.png",
                 title: "Ton copilote jusqu'à la signature",
-                desc: "Assistant de réponse, script d'appel, suivi des RDV. Et tes outils ComeUp restent inclus : analyse de profil, photo, miniatures, pages de vente.",
+                desc: "Assistant de réponse quand un prospect écrit, script d'appel quand il faut décrocher, suivi de ton pipeline jusqu'au client signé.",
               },
             ].map((f) => (
               <div key={f.title} className="rounded-3xl border-2 border-ink bg-white p-6 text-left shadow-[5px_5px_0_0_#FFEE66] transition-transform hover:-translate-y-1">
@@ -335,8 +335,8 @@ export default function Landing() {
             Freelance <Hl>Copilote</Hl>
           </span>
           <p className="max-w-md text-[11px] leading-relaxed text-ink-mute">
-            Outil indépendant créé pour les vendeurs ComeUp, non affilié à ComeUp. Lecture des pages
-            publiques uniquement, aucune donnée inventée, jamais de mot de passe.
+            Outil de prospection pour freelances. Analyse des pages publiques uniquement, aucune donnée
+            inventée, désabonnement présent dans chaque mail envoyé.
           </p>
         </div>
       </footer>

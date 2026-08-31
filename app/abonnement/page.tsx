@@ -10,7 +10,7 @@ const INCLUS = [
   "Le mini-audit à envoyer qui prouve ton sérieux",
   "La boîte de réponses avec assistant pour conclure",
   "La connexion de ta boîte Gmail guidée pas à pas",
-  "Tes outils ComeUp : analyse de profil, photo, miniatures, pages de vente",
+  "Le suivi de ton pipeline : contacté, a répondu, RDV calé, client signé",
 ];
 
 function Hl({ children }: { children: React.ReactNode }) {
@@ -23,7 +23,7 @@ function Hl({ children }: { children: React.ReactNode }) {
 }
 
 export default function Abonnement() {
-  const [form, setForm] = useState({ nom: "", email: "", whatsapp: "", comeupUrl: "", message: "" });
+  const [form, setForm] = useState({ nom: "", email: "", whatsapp: "", siteUrl: "", message: "" });
   const [state, setState] = useState<"idle" | "sending" | "done">("idle");
   const [error, setError] = useState<string | null>(null);
 
@@ -80,7 +80,7 @@ export default function Abonnement() {
               <h1 className="mt-4 text-2xl font-extrabold text-ink">C&apos;est noté, {form.nom.split(" ")[0]} !</h1>
               <p className="mx-auto mt-3 max-w-sm text-[14px] leading-relaxed text-ink-soft">
                 On revient vers toi très vite sur {form.email} avec tes accès et la marche à suivre pour
-                le paiement. Prépare le lien de ton profil ComeUp, on attaque dès l&apos;ouverture de ton espace.
+                le paiement. Prépare ta liste d&apos;entreprises à contacter, on attaque dès l&apos;ouverture de ton espace.
               </p>
               <Link
                 href="/"
@@ -96,7 +96,7 @@ export default function Abonnement() {
               </h1>
               <p className="mt-3 text-[14px] leading-relaxed text-ink-soft">
                 Laisse tes infos : on ouvre ton espace et on te guide pour le paiement. Tu commences à
-                améliorer ton profil ComeUp dès aujourd&apos;hui.
+                remplir ton carnet de clients dès aujourd&apos;hui.
               </p>
 
               <form onSubmit={submit} className="mt-6 space-y-4">
@@ -125,11 +125,11 @@ export default function Abonnement() {
                     className="h-13 w-full rounded-xl border-2 border-line bg-white px-4 py-3 text-[16px] font-medium outline-none transition-colors focus:border-ink"
                   />
                 </Field>
-                <Field label="Le lien de ton profil ComeUp">
+                <Field label="Ton site ou ton portfolio">
                   <input
-                    value={form.comeupUrl}
-                    onChange={(e) => set("comeupUrl", e.target.value)}
-                    placeholder="https://comeup.com/fr/@ton-pseudo"
+                    value={form.siteUrl}
+                    onChange={(e) => set("siteUrl", e.target.value)}
+                    placeholder="https://ton-site.com (optionnel)"
                     className="h-13 w-full rounded-xl border-2 border-line bg-white px-4 py-3 text-[16px] font-medium outline-none transition-colors focus:border-ink"
                   />
                 </Field>
@@ -184,7 +184,7 @@ export default function Abonnement() {
               ))}
             </ul>
             <p className="mt-6 border-t border-line pt-4 text-[12px] leading-relaxed text-ink-mute">
-              Outil indépendant créé pour les vendeurs ComeUp, non affilié à ComeUp.
+              Aucun paiement sur cette page : l&apos;équipe te recontacte pour tout finaliser.
             </p>
           </div>
         </aside>

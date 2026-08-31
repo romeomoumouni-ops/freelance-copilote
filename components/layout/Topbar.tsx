@@ -1,12 +1,8 @@
 "use client";
 
-import { useProfile } from "@/components/ProfileProvider";
 import { IconMenu, IconSearch, IconBell, IconChevronDown } from "@/components/icons";
 
 export default function Topbar({ onMenu }: { onMenu: () => void }) {
-  const { analysis } = useProfile();
-  const name = analysis?.profile.displayName || "Votre profil";
-  const initials = (analysis?.profile.displayName || "?").slice(0, 2).toUpperCase();
   return (
     <header className="sticky top-0 z-30 border-b border-line/80 bg-canvas/80 backdrop-blur-md">
       <div className="flex h-16 items-center gap-3 px-4 sm:px-6 lg:px-8">
@@ -41,11 +37,11 @@ export default function Topbar({ onMenu }: { onMenu: () => void }) {
           <div className="mx-1 hidden h-6 w-px bg-line sm:block" />
           <button className="flex items-center gap-2.5 rounded-xl p-1 pr-2 transition-colors hover:bg-white">
             <span className="flex h-9 w-9 items-center justify-center rounded-full bg-brand text-[12px] font-extrabold text-ink">
-              {initials}
+              FC
             </span>
             <span className="hidden text-left sm:block">
-              <span className="block text-[13px] font-bold leading-tight text-ink">{name}</span>
-              <span className="block text-[11px] leading-tight text-ink-mute">{analysis ? "Vendeur ComeUp" : "Non analysé"}</span>
+              <span className="block text-[13px] font-bold leading-tight text-ink">Mon espace</span>
+              <span className="block text-[11px] leading-tight text-ink-mute">Prospection active</span>
             </span>
             <IconChevronDown size={14} className="hidden text-ink-mute sm:block" />
           </button>

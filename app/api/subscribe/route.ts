@@ -13,6 +13,7 @@ export async function POST(req: Request) {
       email?: string;
       whatsapp?: string;
       comeupUrl?: string;
+      siteUrl?: string;
       message?: string;
     };
     const nom = (body.nom ?? "").trim();
@@ -27,14 +28,14 @@ export async function POST(req: Request) {
     const sb = getAdminClient();
     if (!sb) {
       // Sans Supabase configuré, on ne perd pas la demande : on la trace côté serveur.
-      console.log("[abonnement]", { nom, email, whatsapp: body.whatsapp, comeupUrl: body.comeupUrl });
+      console.log("[abonnement]", { nom, email, whatsapp: body.whatsapp, comeupUrl: body.siteUrl ?? body.comeupUrl });
       return NextResponse.json({ ok: true, stored: false });
     }
     const { error } = await sb.from("leads").insert({
       nom,
       email,
       whatsapp: (body.whatsapp ?? "").trim() || null,
-      comeup_url: (body.comeupUrl ?? "").trim() || null,
+      comeup_url: (body.siteUrl ?? body.comeupUrl ?? "").trim() || null,
       message: (body.message ?? "").trim() || null,
     });
     if (error) throw new Error(error.message);
