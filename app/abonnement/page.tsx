@@ -5,11 +5,12 @@ import Link from "next/link";
 import { IconCheck, IconAlert, IconArrowRight } from "@/components/icons";
 
 const INCLUS = [
-  "Analyse complète de ton profil ComeUp",
-  "Création de photos de profil professionnelles ComeUp",
-  "Création de miniatures ComeUp",
-  "Création de ta page de vente ComeUp",
-  "Chat intégré avec l'équipe Freelance Copilote",
+  "Des listes de prospects analysés : signaux réels sur chaque entreprise",
+  "Des mails personnalisés écrits pour toi, avec relances automatiques",
+  "Le mini-audit à envoyer qui prouve ton sérieux",
+  "La boîte de réponses avec assistant pour conclure",
+  "La connexion de ta boîte Gmail guidée pas à pas",
+  "Tes outils ComeUp : analyse de profil, photo, miniatures, pages de vente",
 ];
 
 function Hl({ children }: { children: React.ReactNode }) {

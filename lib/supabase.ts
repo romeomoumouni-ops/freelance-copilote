@@ -17,6 +17,12 @@ export function getAdminClient(): SupabaseClient | null {
     url && key
       ? createClient(url, key, {
           auth: { persistSession: false, autoRefreshToken: false },
+          // Next patche fetch avec un cache : sans no-store, les lectures
+          // Supabase reviennent périmées dans les routes API.
+          global: {
+            fetch: (input: RequestInfo | URL, init?: RequestInit) =>
+              fetch(input, { ...init, cache: "no-store" }),
+          },
         })
       : null;
   return client;

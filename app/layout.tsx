@@ -11,9 +11,9 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
-  title: "Freelance Copilote · Ton copilote ComeUp",
+  title: "Freelance Copilote · La prospection devient simple",
   description:
-    "Colle le lien de ton profil ComeUp : analyse en direct de tes vraies données, création de ta photo de profil, de tes miniatures et de tes pages de vente.",
+    "Trouve tes futurs clients et convertis 10 fois plus de prospects : listes analysées sur de vraies données, mails personnalisés, relances automatiques, mini-audit à envoyer.",
 };
 
 export default function RootLayout({

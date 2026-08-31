@@ -6,10 +6,25 @@ import { cn } from "@/lib/utils";
 import { useProfile } from "@/components/ProfileProvider";
 import { IconX } from "@/components/icons";
 
-const nav: { href: string; label: string; desc: string }[] = [
-  { href: "/profile", label: "Analyse", desc: "Ton pourcentage de réussite" },
-  { href: "/create", label: "Créer mon profil", desc: "Photo, services, pages de vente" },
-  { href: "/conseils", label: "Conseils", desc: "Ton expert ComeUp répond" },
+const groups: { title: string; items: { href: string; label: string; desc: string }[] }[] = [
+  {
+    title: "Prospection",
+    items: [
+      { href: "/dashboard", label: "Aujourd'hui", desc: "Ta vague du jour et tes chiffres" },
+      { href: "/prospects", label: "Prospects", desc: "Listes, signaux réels, accroches" },
+      { href: "/campagnes", label: "Campagnes", desc: "Séquences et relances auto" },
+      { href: "/inbox", label: "Réponses", desc: "Conclure avec l'assistant" },
+      { href: "/mailbox", label: "Boîte mail", desc: "Ta connexion Gmail" },
+    ],
+  },
+  {
+    title: "Outils ComeUp",
+    items: [
+      { href: "/profile", label: "Analyse", desc: "Ton pourcentage de réussite" },
+      { href: "/create", label: "Créer mon profil", desc: "Photo, services, pages de vente" },
+      { href: "/conseils", label: "Conseils", desc: "Ton expert ComeUp répond" },
+    ],
+  },
 ];
 
 export default function Sidebar({
@@ -42,7 +57,7 @@ export default function Sidebar({
       >
         {/* Wordmark : style ComeUp : Montserrat bold + surligné jaune */}
         <div className="flex items-center justify-between px-5 pb-2 pt-6">
-          <Link href="/profile" className="block">
+          <Link href="/dashboard" className="block">
             <span className="text-[19px] font-extrabold leading-tight tracking-tight text-ink">
               Freelance
               <br />
@@ -52,7 +67,7 @@ export default function Sidebar({
               </span>
             </span>
             <span className="mt-1 block text-[10px] font-semibold uppercase tracking-[0.14em] text-ink-mute">
-              pour ComeUp
+              prospection + comeup
             </span>
           </Link>
           <button
@@ -64,29 +79,38 @@ export default function Sidebar({
           </button>
         </div>
 
-        {/* Navigation : 3 onglets, sans icônes */}
-        <nav className="mt-5 flex-1 space-y-1 overflow-y-auto px-3">
-          {nav.map((item) => {
-            const active = pathname.startsWith(item.href);
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={onClose}
-                className={cn(
-                  "block rounded-xl px-3.5 py-3 transition-all duration-150",
-                  active ? "bg-brand text-ink shadow-[0_6px_16px_-8px_rgba(202,138,4,0.5)]" : "hover:bg-canvas"
-                )}
-              >
-                <span className={cn("block text-[14px] font-bold", active ? "text-ink" : "text-ink-soft")}>
-                  {item.label}
-                </span>
-                <span className={cn("block text-[11px]", active ? "text-ink/70" : "text-ink-mute")}>
-                  {item.desc}
-                </span>
-              </Link>
-            );
-          })}
+        {/* Navigation : groupes, sans icônes */}
+        <nav className="mt-4 flex-1 space-y-5 overflow-y-auto px-3">
+          {groups.map((g) => (
+            <div key={g.title}>
+              <p className="px-3.5 pb-1.5 text-[10px] font-bold uppercase tracking-[0.14em] text-ink-mute">
+                {g.title}
+              </p>
+              <div className="space-y-1">
+                {g.items.map((item) => {
+                  const active = pathname.startsWith(item.href);
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={onClose}
+                      className={cn(
+                        "block rounded-xl px-3.5 py-2.5 transition-all duration-150",
+                        active ? "bg-brand text-ink shadow-[0_6px_16px_-8px_rgba(202,138,4,0.5)]" : "hover:bg-canvas"
+                      )}
+                    >
+                      <span className={cn("block text-[13.5px] font-bold", active ? "text-ink" : "text-ink-soft")}>
+                        {item.label}
+                      </span>
+                      <span className={cn("block text-[11px]", active ? "text-ink/70" : "text-ink-mute")}>
+                        {item.desc}
+                      </span>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </nav>
 
         {/* Profil + paramètres */}

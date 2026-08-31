@@ -12,11 +12,12 @@ const NAV = [
 ];
 
 const INCLUS = [
-  "Analyse complète de ton profil ComeUp",
-  "Création de photos de profil professionnelles ComeUp",
-  "Création de miniatures ComeUp",
-  "Création de ta page de vente ComeUp",
-  "Chat intégré avec l'équipe Freelance Copilote",
+  "Des listes de prospects analysés : signaux réels sur chaque entreprise",
+  "Des mails personnalisés écrits pour toi, avec relances automatiques",
+  "Le mini-audit à envoyer qui prouve ton sérieux",
+  "La boîte de réponses avec assistant pour conclure",
+  "La connexion de ta boîte Gmail guidée pas à pas",
+  "Tes outils ComeUp : analyse de profil, photo, miniatures, pages de vente",
 ];
 
 const CTA = "Je suis freelance, je souhaite m'abonner à cet outil";
@@ -59,7 +60,7 @@ export default function Landing() {
           </div>
 
           <div className="flex items-center gap-3">
-            <Link href="/profile" className="hidden text-[13px] font-semibold text-ink-mute transition-colors hover:text-ink sm:block">
+            <Link href="/dashboard" className="hidden text-[13px] font-semibold text-ink-mute transition-colors hover:text-ink sm:block">
               Connexion
             </Link>
             <Link
@@ -106,21 +107,22 @@ export default function Landing() {
               ))}
             </span>
             <span className="text-[12px] font-bold text-ink">
-              <span className="text-royal">800+</span> services ComeUp scannés en direct
+              <span className="text-royal">Des prospects réels,</span> analysés en direct
             </span>
           </div>
 
           {/* Headline */}
           <h1 className="mx-auto mt-6 max-w-4xl text-[33px] font-extrabold leading-[1.1] tracking-tight text-ink sm:text-[52px]">
-            L&apos;outil B2B pour freelance.
+            La prospection devient simple.
             <br />
-            Améliore ton profil ComeUp
+            Trouve tes futurs clients
             <br />
-            et vends <Hl>10×&nbsp;plus.</Hl>
+            et convertis <Hl>10×&nbsp;plus.</Hl>
           </h1>
           <p className="mx-auto mt-5 max-w-xl text-[15px] leading-relaxed text-ink-soft sm:text-base">
-            Un abonnement, un espace de travail complet : ton profil ComeUp est analysé sur de la vraie
-            data, puis reconstruit pour vendre. Photo, miniatures, pages de vente, tout y passe.
+            Un abonnement, un espace de travail complet : des prospects trouvés et analysés sur leur vrai
+            site, des mails personnalisés qui obtiennent des réponses, des relances automatiques. Et tes
+            outils ComeUp restent inclus.
           </p>
         </div>
 
@@ -163,18 +165,18 @@ export default function Landing() {
               />
               <div className="absolute right-[calc(50%-130px)] top-1 rotate-3 rounded-xl bg-brand px-2.5 py-1.5 shadow-pop">
                 <p className="text-[12px] font-extrabold leading-none text-ink">+34 %</p>
-                <p className="text-[9px] font-semibold text-ink/70">de ventes</p>
+                <p className="text-[9px] font-semibold text-ink/70">de réponses</p>
               </div>
             </div>
 
             {/* BLOC VENDEUR */}
             <div className="relative z-10 w-full max-w-[560px] rounded-3xl border-2 border-ink bg-white p-6 text-left shadow-[8px_8px_0_0_#FFEE66] sm:p-8 lg:mb-6 lg:max-w-[520px]">
               <h2 className="text-[20px] font-extrabold leading-snug text-ink sm:text-[23px]">
-                Augmente tes chances de vendre tes prestations de services sur ComeUp.com
+                Remplis ton carnet de clients grâce à la prospection par e-mail bien faite
               </h2>
               <p className="mt-3 text-[14px] leading-relaxed text-ink-soft">
-                De l&apos;analyse complète de ton profil à la création de tout ton profil, en quelques
-                clics seulement.
+                De la liste de prospects au client signé : signaux réels sur chaque entreprise, mails
+                personnalisés, relances automatiques et mini-audit qui prouve ton sérieux.
               </p>
               <Link
                 href="/abonnement"
@@ -201,18 +203,18 @@ export default function Landing() {
                   <IconTrendingUp size={18} className="text-ink" />
                   <div>
                     <p className="text-[15px] font-extrabold leading-none text-ink">+34 %</p>
-                    <p className="text-[10px] font-semibold text-ink/70">de ventes</p>
+                    <p className="text-[10px] font-semibold text-ink/70">de réponses</p>
                   </div>
                 </div>
               </div>
               <div className="absolute -right-16 bottom-40 z-20 -rotate-2 rounded-2xl border border-line bg-white px-3.5 py-2.5 shadow-pop">
                 <p className="flex items-center gap-1.5 text-[11.5px] font-bold text-ink">
-                  <IconZap size={14} /> Miniature prête
+                  <IconZap size={14} /> Relance partie
                 </p>
               </div>
               <div className="absolute -left-24 bottom-8 z-20 -rotate-2 rounded-full border border-line bg-white px-4 py-2 shadow-pop">
                 <p className="flex items-center gap-1.5 text-[12px] font-bold text-emerald-600">
-                  <IconCheck size={13} /> Yay ! Profil optimisé
+                  <IconCheck size={13} /> Yay ! Client signé
                 </p>
               </div>
             </div>
@@ -228,25 +230,25 @@ export default function Landing() {
             Tout ce que ton abonnement <Hl>débloque</Hl>
           </h2>
           <p className="mx-auto mt-3 max-w-lg text-[14px] text-ink-soft">
-            Trois outils, zéro blabla. Et tout tourne sur tes vraies données, pas sur du vent.
+            Un seul outil, zéro blabla. Et tout tourne sur de la vraie data, pas sur du vent.
           </p>
 
           <div className="mt-10 grid gap-5 md:grid-cols-3">
             {[
               {
                 icon: "/icon-analyse.png",
-                title: "Analyse complète de ton profil",
-                desc: "Ton vrai pourcentage de réussite, basé sur de la vraie data : tes services, tes prix, tes avis, comparés en direct à ton marché.",
+                title: "Des prospects trouvés et analysés",
+                desc: "L'outil lit le vrai site de chaque entreprise : site lent, pas de HTTPS, pas adapté mobile, fiche à l'abandon. Tu sais qui contacter, et surtout pourquoi.",
               },
               {
                 icon: "/icon-creation.png",
-                title: "Photo, miniature, service : tout en un clic",
-                desc: "Ta photo de profil pro générée par IA, tes miniatures prêtes à poster et tes services rédigés pour vendre. Tu cliques, c'est prêt.",
+                title: "Des mails qui obtiennent des réponses",
+                desc: "Accroche personnalisée sur ses vrais problèmes, relances automatiques, arrêt dès qu'il répond. Et un mini-audit à son nom, à envoyer en un clic.",
               },
               {
                 icon: "/icon-expert.png",
-                title: "Un expert ComeUp au bout du fil",
-                desc: "Cale un rendez-vous téléphonique avec un expert ComeUp quand tu veux. Entre deux appels, le chat intégré prend le relais.",
+                title: "Ton copilote jusqu'à la signature",
+                desc: "Assistant de réponse, script d'appel, suivi des RDV. Et tes outils ComeUp restent inclus : analyse de profil, photo, miniatures, pages de vente.",
               },
             ].map((f) => (
               <div key={f.title} className="rounded-3xl border-2 border-ink bg-white p-6 text-left shadow-[5px_5px_0_0_#FFEE66] transition-transform hover:-translate-y-1">
@@ -271,9 +273,9 @@ export default function Landing() {
           </p>
           <div className="mt-10 grid gap-5 md:grid-cols-3">
             {[
-              { n: "1", t: "Colle ton lien", d: "Dans ton espace, tu colles le lien de ton profil ComeUp. Public, sans mot de passe. On ne demande rien d'autre." },
-              { n: "2", t: "Regarde ton score", d: "L'outil lit tout en direct : services, prix, avis, concurrents. Et te dit franchement où tu perds des ventes." },
-              { n: "3", t: "Crée et vends", d: "Photo, miniatures, pages de vente : tu génères, tu télécharges, tu mets en ligne. Et tu regardes les commandes arriver." },
+              { n: "1", t: "Ajoute tes prospects", d: "Colle ta liste d'entreprises. L'outil lit leurs vrais sites et repère ce qui cloche chez chacune : c'est ton angle d'attaque." },
+              { n: "2", t: "Lance ta campagne", d: "Accroche et relances écrites avec les vrais signaux de chaque prospect. Tu valides, et ça part de ta propre boîte Gmail." },
+              { n: "3", t: "Réponds et signe", d: "Les réponses arrivent, les séquences s'arrêtent toutes seules, l'assistant t'aide à conclure. RDV calé, client signé." },
             ].map((s) => (
               <div key={s.n} className="relative rounded-3xl bg-canvas p-7 text-left">
                 <span className="absolute -top-4 left-6 flex h-9 w-9 items-center justify-center rounded-full bg-navy text-[15px] font-extrabold text-brand">
