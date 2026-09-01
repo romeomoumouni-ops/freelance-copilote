@@ -71,6 +71,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error(data?.error || "Inscription impossible. Réessaie.");
+    if (data.needsConfirm) return { needsConfirm: true };
+    // repli sans service d'e-mail : connexion directe
     const { data: login, error } = await sb.auth.signInWithPassword({
       email: email.trim().toLowerCase(),
       password,

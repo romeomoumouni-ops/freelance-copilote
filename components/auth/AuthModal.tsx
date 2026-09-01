@@ -9,7 +9,7 @@ import { createPortal } from "react-dom";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { IconX } from "@/components/icons";
 
-export type AuthView = "signup" | "login";
+export type AuthView = "signup" | "login" | "confirm";
 
 export default function AuthModal({
   open,
@@ -60,7 +60,7 @@ export default function AuthModal({
       if (view === "signup") {
         const { needsConfirm } = await signUp({ name, email, password });
         if (needsConfirm) {
-          setNotice("Ton compte est créé ! Ouvre l'e-mail qu'on vient de t'envoyer pour le confirmer, puis connecte-toi.");
+          setView("confirm");
         } else {
           onClose();
           router.push("/dashboard");
@@ -93,14 +93,19 @@ export default function AuthModal({
         </button>
 
         <h2 className="pr-8 text-[22px] font-extrabold leading-snug tracking-tight text-ink">
-          {view === "signup" ? "Je suis nouveau, je veux m'inscrire" : "Content de te revoir !"}
+          {view === "signup" ? "Je suis nouveau, je veux m'inscrire" : view === "login" ? "Content de te revoir !" : "Vérifie ta boîte mail"}
         </h2>
         <p className="mt-1.5 text-[13px] leading-relaxed text-ink-soft">
           {view === "signup"
             ? "Crée ton compte gratuitement et ouvre ton espace de prospection."
-            : "Connecte-toi pour retrouver ton espace de prospection."}
+            : view === "login"
+              ? "Connecte-toi pour retrouver ton espace de prospection."
+              : "Ton compte est créé, il ne reste qu'un clic."}
         </p>
 
+        {view === "confirm" ? (
+          <ConfirmInbox email={email} />
+        ) : (
         <form onSubmit={submit} className="mt-5 space-y-3.5">
           {view === "signup" && (
             <label className="block">
@@ -136,24 +141,72 @@ export default function AuthModal({
             {busy ? "Un instant..." : view === "signup" ? "Créer mon compte" : "Me connecter"}
           </button>
         </form>
+        )}
 
         {/* Bascule : bouton JAUNE, charte ComeUp */}
         <button
           onClick={() => {
-            setView(view === "signup" ? "login" : "signup");
+            setView(view === "signup" ? "login" : view === "login" ? "signup" : "login");
             setError("");
             setNotice("");
           }}
           className="mt-3 w-full rounded-2xl bg-brand px-6 py-3.5 text-[14px] font-bold text-ink transition-all hover:bg-primary-400 active:scale-[0.99]"
         >
-          {view === "signup" ? "J'ai déjà un compte" : "Je suis nouveau, je veux m'inscrire"}
+          {view === "signup" ? "J'ai déjà un compte" : view === "login" ? "Je suis nouveau, je veux m'inscrire" : "J'ai confirmé, je me connecte"}
         </button>
 
-        <p className="mt-4 text-center text-[11px] leading-relaxed text-ink-mute">
-          Gratuit, sans carte bancaire. Tes données restent à toi.
-        </p>
+        {view !== "confirm" && (
+          <p className="mt-4 text-center text-[11px] leading-relaxed text-ink-mute">
+            Gratuit, sans carte bancaire. Tes données restent à toi.
+          </p>
+        )}
       </div>
     </div>,
     document.body
+  );
+}
+
+
+/* Écran « va vérifier ta boîte mail » après l'inscription. */
+function ConfirmInbox({ email }: { email: string }) {
+  const [state, setState] = useState<"idle" | "sending" | "sent">("idle");
+
+  async function resendMail() {
+    setState("sending");
+    try {
+      await fetch("/api/auth/resend", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+    } finally {
+      setState("sent");
+    }
+  }
+
+  return (
+    <div className="mt-5">
+      <div className="rounded-2xl bg-canvas p-5 text-center">
+        <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-brand text-[22px]">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-ink">
+            <rect x="2" y="4" width="20" height="16" rx="3" />
+            <path d="m2 7 10 7L22 7" />
+          </svg>
+        </span>
+        <p className="mt-3 text-[14px] font-bold text-ink">On vient d&apos;envoyer un lien à</p>
+        <p className="truncate text-[14px] font-bold text-royal">{email}</p>
+        <p className="mx-auto mt-2.5 max-w-xs text-[12.5px] leading-relaxed text-ink-soft">
+          Ouvre ta boîte mail et clique sur « Je confirme mon adresse » : ton espace s&apos;ouvre
+          directement. Pense à regarder dans les spams.
+        </p>
+      </div>
+      <button
+        onClick={resendMail}
+        disabled={state === "sending"}
+        className="mt-3.5 w-full rounded-2xl border border-line bg-white px-6 py-3 text-[13px] font-bold text-ink-soft transition-all hover:border-ink/20 hover:bg-canvas disabled:opacity-60"
+      >
+        {state === "sending" ? "Renvoi en cours..." : state === "sent" ? "C'est renvoyé, regarde ta boîte" : "Je n'ai rien reçu, renvoyer l'e-mail"}
+      </button>
+    </div>
   );
 }
