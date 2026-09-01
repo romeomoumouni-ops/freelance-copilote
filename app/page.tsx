@@ -2,6 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/components/auth/AuthProvider";
+import AuthModal, { type AuthView } from "@/components/auth/AuthModal";
 import { IconCheck, IconStar, IconWallet, IconImage, IconPen, IconTrendingUp, IconZap, IconMenu, IconX } from "@/components/icons";
 
 const NAV = [
@@ -20,7 +23,7 @@ const INCLUS = [
   "Le suivi de ton pipeline : contacté, a répondu, RDV calé, client signé",
 ];
 
-const CTA = "Je suis freelance, je souhaite m'abonner à cet outil";
+const CTA = "Je veux créer mon compte";
 
 /** Surligné jaune */
 function Hl({ children }: { children: React.ReactNode }) {
@@ -39,6 +42,11 @@ const AVATAR_RIGHT =
 
 export default function Landing() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [authView, setAuthView] = useState<AuthView | null>(null);
+  const { user } = useAuth();
+  const router = useRouter();
+  const openSignup = () => (user ? router.push("/dashboard") : setAuthView("signup"));
+  const openLogin = () => (user ? router.push("/dashboard") : setAuthView("login"));
 
   return (
     <main id="accueil" className="min-h-screen scroll-smooth bg-white">
@@ -60,16 +68,16 @@ export default function Landing() {
           </div>
 
           <div className="flex items-center gap-3">
-            <Link href="/dashboard" className="hidden text-[13px] font-semibold text-ink-mute transition-colors hover:text-ink sm:block">
+            <button onClick={openLogin} className="hidden text-[13px] font-semibold text-ink-mute transition-colors hover:text-ink sm:block">
               Connexion
-            </Link>
-            <Link
-              href="/abonnement"
+            </button>
+            <button
+              onClick={openSignup}
               className="whitespace-nowrap rounded-full bg-royal px-4 py-2 text-[13px] font-bold text-white shadow-[0_8px_20px_-10px_rgba(37,99,235,0.8)] transition-all hover:bg-royal-dark active:scale-[0.98]"
             >
-              <span className="hidden sm:inline">Je m&apos;abonne</span>
-              <span className="sm:hidden">M&apos;abonner</span>
-            </Link>
+              <span className="hidden sm:inline">Créer mon compte</span>
+              <span className="sm:hidden">Mon compte</span>
+            </button>
             <button onClick={() => setMenuOpen((o) => !o)} className="rounded-lg p-1.5 text-ink md:hidden" aria-label="Menu">
               {menuOpen ? <IconX size={20} /> : <IconMenu size={20} />}
             </button>
@@ -112,15 +120,17 @@ export default function Landing() {
           </div>
 
           {/* Headline */}
-          <h1 className="mx-auto mt-6 max-w-4xl text-[33px] font-extrabold leading-[1.1] tracking-tight text-ink sm:text-[52px]">
-            La prospection devient simple.
+          <h1 className="mx-auto mt-6 max-w-4xl text-[30px] font-extrabold leading-[1.12] tracking-tight text-ink sm:text-[46px]">
+            La prospection devient plus simple
+            <br />
+            avec Freelance Copilote.
             <br />
             Trouve tes futurs clients
             <br />
             et convertis <Hl>10×&nbsp;plus.</Hl>
           </h1>
           <p className="mx-auto mt-5 max-w-xl text-[15px] leading-relaxed text-ink-soft sm:text-base">
-            Un abonnement, un espace de travail complet : des prospects trouvés et analysés sur leur vrai
+            Un compte gratuit, un espace de travail complet : des prospects trouvés et analysés sur leur vrai
             site, des mails personnalisés qui obtiennent des réponses, des relances automatiques. Toi,
             tu réponds et tu signes.
           </p>
@@ -178,14 +188,14 @@ export default function Landing() {
                 De la liste de prospects au client signé : signaux réels sur chaque entreprise, mails
                 personnalisés, relances automatiques et mini-audit qui prouve ton sérieux.
               </p>
-              <Link
-                href="/abonnement"
-                className="mt-6 block rounded-2xl bg-royal px-6 py-4 text-center text-[15px] font-bold leading-snug text-white shadow-[0_14px_30px_-14px_rgba(37,99,235,0.85)] transition-all hover:bg-royal-dark active:scale-[0.99]"
+              <button
+                onClick={openSignup}
+                className="mt-6 block w-full rounded-2xl bg-royal px-6 py-4 text-center text-[15px] font-bold leading-snug text-white shadow-[0_14px_30px_-14px_rgba(37,99,235,0.85)] transition-all hover:bg-royal-dark active:scale-[0.99]"
               >
                 {CTA}
-              </Link>
+              </button>
               <p className="mt-3 text-center text-[12px] font-semibold text-ink-mute">
-                Tu remplis le formulaire, l&apos;équipe te recontacte pour activer ton abonnement.
+                Gratuit, sans carte bancaire. Ton espace s&apos;ouvre tout de suite.
               </p>
             </div>
 
@@ -227,7 +237,7 @@ export default function Landing() {
         <div className="pointer-events-none absolute -right-24 top-10 h-64 w-64 rounded-full bg-navy/10 blur-3xl" />
         <div className="relative mx-auto max-w-6xl px-5 text-center">
           <h2 className="text-3xl font-extrabold tracking-tight text-ink sm:text-4xl">
-            Tout ce que ton abonnement <Hl>débloque</Hl>
+            Tout ce que ton compte <Hl>débloque</Hl>
           </h2>
           <p className="mx-auto mt-3 max-w-lg text-[14px] text-ink-soft">
             Un seul outil, zéro blabla. Et tout tourne sur de la vraie data, pas sur du vent.
@@ -269,7 +279,7 @@ export default function Landing() {
             Comment ça marche ? <Hl>En 3 minutes.</Hl>
           </h2>
           <p className="mx-auto mt-3 max-w-lg text-[14px] text-ink-soft">
-            Une fois abonné, tout se passe dans ton espace membre.
+            Une fois ton compte créé, tout se passe dans ton espace membre.
           </p>
           <div className="mt-10 grid gap-5 md:grid-cols-3">
             {[
@@ -286,12 +296,12 @@ export default function Landing() {
               </div>
             ))}
           </div>
-          <Link
-            href="/abonnement"
+          <button
+            onClick={openSignup}
             className="mt-9 inline-block rounded-full bg-ink px-7 py-3 text-[14px] font-bold text-white shadow-[0_10px_24px_-10px_rgba(23,22,28,0.5)] transition-all hover:bg-black"
           >
             Ouvrir mon espace membre
-          </Link>
+          </button>
         </div>
       </section>
 
@@ -302,13 +312,13 @@ export default function Landing() {
             Voici ce qui est <Hl>inclus</Hl>
           </h2>
           <p className="mx-auto mt-3 max-w-lg text-[14px] text-ink-soft">
-            Tout ça devient actif dans ton espace membre dès que l&apos;équipe t&apos;a recontacté et que
-            ton abonnement est en place.
+            Tout ça t&apos;attend dans ton espace membre, dès la création de ton compte. Gratuit, sans
+            carte bancaire.
           </p>
 
           <div className="mt-10 rounded-3xl border-2 border-ink bg-white p-8 text-left shadow-[8px_8px_0_0_#FFEE66]">
             <p className="text-[11px] font-bold uppercase tracking-wider text-ink-mute">
-              Inclus dans l&apos;abonnement
+              Inclus dans ton compte
             </p>
             <ul className="mt-5 space-y-3">
               {INCLUS.map((f) => (
@@ -318,12 +328,12 @@ export default function Landing() {
                 </li>
               ))}
             </ul>
-            <Link
-              href="/abonnement"
-              className="mt-8 block rounded-2xl bg-royal px-6 py-4 text-center text-[15px] font-bold leading-snug text-white shadow-[0_14px_30px_-14px_rgba(37,99,235,0.85)] transition-all hover:bg-royal-dark active:scale-[0.99]"
+            <button
+              onClick={openSignup}
+              className="mt-8 block w-full rounded-2xl bg-royal px-6 py-4 text-center text-[15px] font-bold leading-snug text-white shadow-[0_14px_30px_-14px_rgba(37,99,235,0.85)] transition-all hover:bg-royal-dark active:scale-[0.99]"
             >
               {CTA}
-            </Link>
+            </button>
           </div>
         </div>
       </section>
@@ -340,6 +350,8 @@ export default function Landing() {
           </p>
         </div>
       </footer>
+
+      <AuthModal open={authView !== null} view={authView ?? "signup"} onClose={() => setAuthView(null)} />
     </main>
   );
 }

@@ -9,14 +9,17 @@ import {
   saveMailbox,
   saveProspects,
 } from "@/lib/prospect/store";
+import { getUserId } from "@/lib/auth/server";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
 /* POST : relève la boîte (IMAP) et croise avec les prospects contactés.
    Toute réponse détectée stoppe la séquence du prospect. */
-export async function POST(_req: NextRequest) {
-  const mailbox = await getMailbox();
+export async function POST(req: NextRequest) {
+  const uid = await getUserId(req);
+  if (!uid) return NextResponse.json({ error: "Connecte-toi pour continuer." }, { status: 401 });
+  const mailbox = await getMailbox(uid);
   if (!mailbox || !mailbox.appPassword) {
     return NextResponse.json({ error: "Connecte d'abord ta boîte Gmail dans « Boîte mail »." }, { status: 400 });
   }
@@ -34,7 +37,7 @@ export async function POST(_req: NextRequest) {
     );
   }
 
-  const [prospects, campaigns] = await Promise.all([getProspects(), getCampaigns()]);
+  const [prospects, campaigns] = await Promise.all([getProspects(uid), getCampaigns(uid)]);
   const contacted = prospects.filter((p) => p.email && p.status !== "nouveau");
   let found = 0;
   for (const mail of inbound) {
@@ -47,10 +50,10 @@ export async function POST(_req: NextRequest) {
       if (ct && ct.status === "en_cours") ct.status = "repondu";
     }
     found += 1;
-    await logEvent("reponse", `${p.entreprise} a répondu`);
+    await logEvent(uid, "reponse", `${p.entreprise} a répondu`);
   }
-  await saveProspects(prospects);
-  await saveCampaigns(campaigns);
-  await saveMailbox({ ...mailbox, lastReplyCheck: new Date().toISOString() });
+  await saveProspects(uid, prospects);
+  await saveCampaigns(uid, campaigns);
+  await saveMailbox(uid, { ...mailbox, lastReplyCheck: new Date().toISOString() });
   return NextResponse.json({ checked: inbound.length, found });
 }

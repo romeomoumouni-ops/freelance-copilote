@@ -5,8 +5,13 @@ import type { CallScript, ReplySuggestion } from "@/lib/prospect/engine";
 
 export type { Campaign, CampaignStep, EventLog, Prospect, ProspectStatus, CallScript, ReplySuggestion };
 
+import { authToken } from "@/lib/auth/client";
+
 async function jf<T>(url: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(url, init);
+  const token = await authToken();
+  const headers = new Headers(init?.headers);
+  if (token) headers.set("Authorization", `Bearer ${token}`);
+  const res = await fetch(url, { ...init, headers });
   const text = await res.text();
   let data: T & { error?: string };
   try {

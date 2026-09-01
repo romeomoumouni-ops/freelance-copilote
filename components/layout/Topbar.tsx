@@ -1,8 +1,12 @@
 "use client";
 
-import { IconMenu, IconSearch, IconBell, IconChevronDown } from "@/components/icons";
+import { IconMenu, IconSearch, IconBell } from "@/components/icons";
+import { useAuth } from "@/components/auth/AuthProvider";
 
 export default function Topbar({ onMenu }: { onMenu: () => void }) {
+  const { user } = useAuth();
+  const displayName = (user?.user_metadata?.name as string) || "Mon espace";
+  const email = user?.email || "";
   return (
     <header className="sticky top-0 z-30 border-b border-line/80 bg-canvas/80 backdrop-blur-md">
       <div className="flex h-16 items-center gap-3 px-4 sm:px-6 lg:px-8">
@@ -31,16 +35,15 @@ export default function Topbar({ onMenu }: { onMenu: () => void }) {
             <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full border-2 border-white bg-red-500" />
           </button>
           <div className="mx-1 hidden h-6 w-px bg-line sm:block" />
-          <button className="flex items-center gap-2.5 rounded-xl p-1 pr-2 transition-colors hover:bg-white">
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-brand text-[12px] font-extrabold text-ink">
-              FC
+          <div className="flex items-center gap-2.5 rounded-xl p-1 pr-2">
+            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-brand text-[12px] font-extrabold uppercase text-ink">
+              {(displayName || "FC").slice(0, 2)}
             </span>
             <span className="hidden text-left sm:block">
-              <span className="block text-[13px] font-bold leading-tight text-ink">Mon espace</span>
-              <span className="block text-[11px] leading-tight text-ink-mute">Prospection active</span>
+              <span className="block text-[13px] font-bold leading-tight text-ink">{displayName}</span>
+              <span className="block text-[11px] leading-tight text-ink-mute">{email}</span>
             </span>
-            <IconChevronDown size={14} className="hidden text-ink-mute sm:block" />
-          </button>
+          </div>
         </div>
       </div>
     </header>

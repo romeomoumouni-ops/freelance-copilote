@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { IconX } from "@/components/icons";
+import { IconLogout, IconX } from "@/components/icons";
+import { useAuth } from "@/components/auth/AuthProvider";
 
 const nav: { href: string; label: string; desc: string }[] = [
   { href: "/dashboard", label: "Aujourd'hui", desc: "Ta vague du jour et tes chiffres" },
@@ -21,6 +22,10 @@ export default function Sidebar({
   onClose: () => void;
 }) {
   const pathname = usePathname();
+  const { user, signOut } = useAuth();
+  const displayName = (user?.user_metadata?.name as string) || "Mon espace";
+  const email = user?.email || "";
+  const initials = (displayName || email || "FC").slice(0, 2);
 
   return (
     <>
@@ -84,17 +89,23 @@ export default function Sidebar({
           })}
         </nav>
 
-        {/* Pied de barre */}
-        <div className="border-t border-line p-4">
+        {/* Pied de barre : compte + déconnexion */}
+        <div className="space-y-1 border-t border-line p-4">
           <div className="flex items-center gap-3 rounded-2xl px-2 py-1.5">
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand text-[12px] font-extrabold text-ink">
-              FC
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand text-[12px] font-extrabold uppercase text-ink">
+              {initials}
             </span>
             <div className="min-w-0">
-              <p className="truncate text-[13px] font-bold text-ink">Mon espace</p>
-              <p className="truncate text-[11px] text-ink-mute">Prospection active</p>
+              <p className="truncate text-[13px] font-bold text-ink">{displayName}</p>
+              <p className="truncate text-[11px] text-ink-mute">{email}</p>
             </div>
           </div>
+          <button
+            onClick={() => signOut()}
+            className="flex w-full items-center gap-1.5 rounded-lg px-2 py-1.5 text-[12px] font-semibold text-ink-mute transition-colors hover:text-ink"
+          >
+            <IconLogout size={13} /> Se déconnecter
+          </button>
         </div>
       </aside>
     </>

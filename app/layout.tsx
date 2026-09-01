@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
 import "./globals.css";
 import { ProfileProvider } from "@/components/ProfileProvider";
+import { AuthProvider } from "@/components/auth/AuthProvider";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -22,7 +23,9 @@ export default function RootLayout({
   return (
     <html lang="fr" className={montserrat.variable}>
       <body className="font-sans">
-        <ProfileProvider>{children}</ProfileProvider>
+        <AuthProvider>
+          <ProfileProvider>{children}</ProfileProvider>
+        </AuthProvider>
       </body>
     </html>
   );

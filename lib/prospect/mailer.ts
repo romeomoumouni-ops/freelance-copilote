@@ -20,8 +20,8 @@ export async function verifyMailbox(m: MailboxSettings): Promise<void> {
   await makeTransport(m).verify();
 }
 
-export function unsubFooter(email: string, baseUrl: string): string {
-  const token = Buffer.from(email.trim().toLowerCase()).toString("base64url");
+export function unsubFooter(uid: string, email: string, baseUrl: string): string {
+  const token = Buffer.from(uid + "|" + email.trim().toLowerCase()).toString("base64url");
   return `\n\n--\nPour ne plus recevoir mes messages : ${baseUrl}/api/unsub?e=${token}`;
 }
 

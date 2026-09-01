@@ -8,18 +8,22 @@ export const dynamic = "force-dynamic";
    et stoppe toutes les séquences de ce contact. */
 export async function GET(req: NextRequest) {
   const token = req.nextUrl.searchParams.get("e") || "";
+  let uid = "";
   let email = "";
   try {
-    email = Buffer.from(token, "base64url").toString("utf8").trim().toLowerCase();
+    const raw = Buffer.from(token, "base64url").toString("utf8");
+    const sep = raw.indexOf("|");
+    uid = raw.slice(0, sep).trim();
+    email = raw.slice(sep + 1).trim().toLowerCase();
   } catch {
     /* token invalide */
   }
-  if (!email || !/@/.test(email)) {
+  if (!uid || !email || !/@/.test(email)) {
     return new NextResponse("Lien invalide.", { status: 400 });
   }
-  await suppress(email);
-  const prospects = await getProspects();
-  const campaigns = await getCampaigns();
+  await suppress(uid, email);
+  const prospects = await getProspects(uid);
+  const campaigns = await getCampaigns(uid);
   for (const p of prospects) {
     if (p.email === email) {
       for (const c of campaigns) {
@@ -28,9 +32,9 @@ export async function GET(req: NextRequest) {
       }
     }
   }
-  await saveProspects(prospects);
-  await saveCampaigns(campaigns);
-  await logEvent("desabo", email);
+  await saveProspects(uid, prospects);
+  await saveCampaigns(uid, campaigns);
+  await logEvent(uid, "desabo", email);
 
   const html = `<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Désabonnement confirmé</title></head>
 <body style="margin:0;font-family:system-ui,-apple-system,sans-serif;background:#F7F6F3;display:flex;min-height:100vh;align-items:center;justify-content:center;padding:24px">

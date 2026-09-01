@@ -35,13 +35,16 @@ async function setStrict<T>(key: string, value: T): Promise<void> {
   }
 }
 
+/* Données CLOISONNÉES PAR UTILISATEUR : chaque clé est préfixée par
+   l'identifiant du compte (Supabase Auth). */
 const K = {
-  prospects: "prospection_prospects",
-  campaigns: "prospection_campaigns",
-  mailbox: "prospection_mailbox",
-  suppression: "prospection_suppression",
-  events: "prospection_events",
-  sent: (day: string) => `prospection_sent_${day}`,
+  prospects: (uid: string) => `prospection_${uid}_prospects`,
+  campaigns: (uid: string) => `prospection_${uid}_campaigns`,
+  mailbox: (uid: string) => `prospection_${uid}_mailbox`,
+  suppression: (uid: string) => `prospection_${uid}_suppression`,
+  events: (uid: string) => `prospection_${uid}_events`,
+  sent: (uid: string, day: string) => `prospection_${uid}_sent_${day}`,
+  users: "prospection_users",
 };
 
 async function get<T>(key: string, fallback: T): Promise<T> {
@@ -51,55 +54,70 @@ async function get<T>(key: string, fallback: T): Promise<T> {
 
 /* -------------------- prospects -------------------- */
 
-export function getProspects(): Promise<Prospect[]> {
-  return get<Prospect[]>(K.prospects, []);
+export function getProspects(uid: string): Promise<Prospect[]> {
+  return get<Prospect[]>(K.prospects(uid), []);
 }
 
-export async function saveProspects(list: Prospect[]): Promise<void> {
-  await setStrict(K.prospects, list);
+export async function saveProspects(uid: string, list: Prospect[]): Promise<void> {
+  await setStrict(K.prospects(uid), list);
 }
 
-export async function updateProspect(id: string, patch: Partial<Prospect>): Promise<Prospect | null> {
-  const list = await getProspects();
+export async function updateProspect(uid: string, id: string, patch: Partial<Prospect>): Promise<Prospect | null> {
+  const list = await getProspects(uid);
   const idx = list.findIndex((p) => p.id === id);
   if (idx < 0) return null;
   list[idx] = { ...list[idx], ...patch };
-  await saveProspects(list);
+  await saveProspects(uid, list);
   return list[idx];
 }
 
 /* -------------------- campagnes -------------------- */
 
-export function getCampaigns(): Promise<Campaign[]> {
-  return get<Campaign[]>(K.campaigns, []);
+export function getCampaigns(uid: string): Promise<Campaign[]> {
+  return get<Campaign[]>(K.campaigns(uid), []);
 }
 
-export async function saveCampaigns(list: Campaign[]): Promise<void> {
-  await setStrict(K.campaigns, list);
+export async function saveCampaigns(uid: string, list: Campaign[]): Promise<void> {
+  await setStrict(K.campaigns(uid), list);
 }
 
 /* -------------------- boîte mail -------------------- */
 
-export function getMailbox(): Promise<MailboxSettings | null> {
-  return cacheGet<MailboxSettings>(K.mailbox, FOREVER);
+export function getMailbox(uid: string): Promise<MailboxSettings | null> {
+  return cacheGet<MailboxSettings>(K.mailbox(uid), FOREVER);
 }
 
-export async function saveMailbox(m: MailboxSettings): Promise<void> {
-  await setStrict(K.mailbox, m);
+export async function saveMailbox(uid: string, m: MailboxSettings): Promise<void> {
+  await setStrict(K.mailbox(uid), m);
+  await registerUser(uid);
+}
+
+/* -------------------- registre des comptes (pour le cron d'envoi) -------------------- */
+
+export function getUsers(): Promise<string[]> {
+  return get<string[]>(K.users, []);
+}
+
+export async function registerUser(uid: string): Promise<void> {
+  const list = await getUsers();
+  if (!list.includes(uid)) {
+    list.push(uid);
+    await setStrict(K.users, list);
+  }
 }
 
 /* -------------------- liste de suppression (désabonnés) -------------------- */
 
-export function getSuppression(): Promise<string[]> {
-  return get<string[]>(K.suppression, []);
+export function getSuppression(uid: string): Promise<string[]> {
+  return get<string[]>(K.suppression(uid), []);
 }
 
-export async function suppress(email: string): Promise<void> {
-  const list = await getSuppression();
+export async function suppress(uid: string, email: string): Promise<void> {
+  const list = await getSuppression(uid);
   const e = email.trim().toLowerCase();
   if (!list.includes(e)) {
     list.push(e);
-    await setStrict(K.suppression, list);
+    await setStrict(K.suppression(uid), list);
   }
 }
 
@@ -109,39 +127,39 @@ export function today(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
-export function getSentToday(): Promise<number> {
-  return get<number>(K.sent(today()), 0);
+export function getSentToday(uid: string): Promise<number> {
+  return get<number>(K.sent(uid, today()), 0);
 }
 
-export async function bumpSentToday(n = 1): Promise<number> {
-  const v = (await getSentToday()) + n;
-  await setStrict(K.sent(today()), v);
+export async function bumpSentToday(uid: string, n = 1): Promise<number> {
+  const v = (await getSentToday(uid)) + n;
+  await setStrict(K.sent(uid, today()), v);
   return v;
 }
 
-export async function getSentSeries(days = 14): Promise<{ date: string; sent: number }[]> {
+export async function getSentSeries(uid: string, days = 14): Promise<{ date: string; sent: number }[]> {
   const out: { date: string; sent: number }[] = [];
   for (let i = days - 1; i >= 0; i--) {
     const d = new Date(Date.now() - i * 86400000).toISOString().slice(0, 10);
-    out.push({ date: d, sent: await get<number>(K.sent(d), 0) });
+    out.push({ date: d, sent: await get<number>(K.sent(uid, d), 0) });
   }
   return out;
 }
 
 /* -------------------- journal d'événements -------------------- */
 
-export async function logEvent(type: EventLog["type"], label: string): Promise<void> {
+export async function logEvent(uid: string, type: EventLog["type"], label: string): Promise<void> {
   try {
-    const list = await get<EventLog[]>(K.events, []);
+    const list = await get<EventLog[]>(K.events(uid), []);
     list.unshift({ at: new Date().toISOString(), type, label });
-    await setStrict(K.events, list.slice(0, 60));
+    await setStrict(K.events(uid), list.slice(0, 60));
   } catch {
     /* journal best effort : ne bloque jamais un envoi */
   }
 }
 
-export function getEvents(): Promise<EventLog[]> {
-  return get<EventLog[]>(K.events, []);
+export function getEvents(uid: string): Promise<EventLog[]> {
+  return get<EventLog[]>(K.events(uid), []);
 }
 
 /* -------------------- util -------------------- */

@@ -11,6 +11,7 @@ import Button from "@/components/ui/Button";
 import Modal from "@/components/ui/Modal";
 import PageHeader from "@/components/ui/PageHeader";
 import { useToast } from "@/components/ui/Toast";
+import { useAuth } from "@/components/auth/AuthProvider";
 import { IconCopy, IconExternal, IconPlus, IconRefresh, IconSearch, IconTrash } from "@/components/icons";
 import { api, type CallScript, type Prospect } from "@/lib/prospect/client";
 import { STATUS_LABELS, type ProspectStatus } from "@/lib/prospect/types";
@@ -217,8 +218,10 @@ function ProspectDetail({
   onChanged: () => Promise<void>;
 }) {
   const toast = useToast();
+  const { user } = useAuth();
   const [busy, setBusy] = useState<string | null>(null);
   const [script, setScript] = useState<CallScript | null>(null);
+  const auditPath = `/audit/${user?.id}/${p.id}`;
 
   async function run(label: string, fn: () => Promise<void>) {
     setBusy(label);
@@ -304,10 +307,10 @@ function ProspectDetail({
               <p className="text-[11.5px] text-ink-mute">Une page propre, à son nom : ta meilleure preuve de sérieux.</p>
             </div>
             <div className="flex gap-2">
-              <a href={`/audit/${p.id}`} target="_blank" rel="noreferrer">
+              <a href={auditPath} target="_blank" rel="noreferrer">
                 <Button size="sm" variant="secondary">Voir</Button>
               </a>
-              <Button size="sm" variant="primary" icon={<IconCopy size={13} />} onClick={() => copy(`${location.origin}/audit/${p.id}`, "Lien de l'audit copié.")}>
+              <Button size="sm" variant="primary" icon={<IconCopy size={13} />} onClick={() => copy(`${location.origin}${auditPath}`, "Lien de l'audit copié.")}>
                 Copier le lien
               </Button>
             </div>

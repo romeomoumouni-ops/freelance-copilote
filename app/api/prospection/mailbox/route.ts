@@ -1,13 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyMailbox } from "@/lib/prospect/mailer";
 import { getMailbox, saveMailbox } from "@/lib/prospect/store";
+import { getUserId } from "@/lib/auth/server";
 import { DEFAULT_MAILBOX, type MailboxSettings } from "@/lib/prospect/types";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
 
-export async function GET() {
-  const m = await getMailbox();
+export async function GET(req: NextRequest) {
+  const uid = await getUserId(req);
+  if (!uid) return NextResponse.json({ error: "Connecte-toi pour continuer." }, { status: 401 });
+  const m = await getMailbox(uid);
   if (!m) return NextResponse.json({ mailbox: null });
   // jamais le mot de passe vers le client
   return NextResponse.json({
@@ -23,8 +26,10 @@ export async function GET() {
 
 /* POST { email, fromName, appPassword?, dailyCap?, action?: "test" } */
 export async function POST(req: NextRequest) {
+  const uid = await getUserId(req);
+  if (!uid) return NextResponse.json({ error: "Connecte-toi pour continuer." }, { status: 401 });
   const body = await req.json().catch(() => ({}));
-  const prev = await getMailbox();
+  const prev = await getMailbox(uid);
   const email = String(body.email || prev?.email || "").trim().toLowerCase();
   const fromName = String(body.fromName || prev?.fromName || "").trim();
   const appPassword = String(body.appPassword || "").replace(/\s+/g, "") || prev?.appPassword || "";
@@ -50,8 +55,8 @@ export async function POST(req: NextRequest) {
     // Sauvegarde STRICTE + relecture : on ne dit jamais « c'est prêt »
     // si rien n'a été écrit (ex. variables Supabase absentes sur Vercel).
     try {
-      await saveMailbox(mailbox);
-      const back = await getMailbox();
+      await saveMailbox(uid, mailbox);
+      const back = await getMailbox(uid);
       if (!back || back.email !== mailbox.email || (verified && !back.verifiedAt)) {
         throw new Error(
           "La sauvegarde n'a pas été relue : la base de données n'est pas branchée sur ce serveur. Sur Vercel, ajoute NEXT_PUBLIC_SUPABASE_URL et SUPABASE_SERVICE_ROLE_KEY puis redéploie."
@@ -67,7 +72,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    await saveMailbox(mailbox);
+    await saveMailbox(uid, mailbox);
   } catch (e) {
     return NextResponse.json({ error: e instanceof Error ? e.message : String(e) }, { status: 500 });
   }

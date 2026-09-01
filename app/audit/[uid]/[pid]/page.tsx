@@ -19,8 +19,8 @@ const sevLabel: Record<number, { txt: string; cls: string }> = {
   1: { txt: "À prévoir", cls: "bg-ink/5 text-ink-soft" },
 };
 
-export default async function AuditPage({ params }: { params: { id: string } }) {
-  const prospect = (await getProspects()).find((p) => p.id === params.id);
+export default async function AuditPage({ params }: { params: { uid: string; pid: string } }) {
+  const prospect = (await getProspects(params.uid)).find((p) => p.id === params.pid);
 
   if (!prospect || prospect.signals.length === 0) {
     return (
