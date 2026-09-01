@@ -35,8 +35,10 @@ export default function AuthModal({
       setView(initialView);
       setError("");
       setNotice("");
+      // précharge l'espace : la bascule après connexion est instantanée
+      router.prefetch("/dashboard");
     }
-  }, [open, initialView]);
+  }, [open, initialView, router]);
 
   useEffect(() => {
     if (!open) return;
@@ -62,13 +64,13 @@ export default function AuthModal({
         if (needsConfirm) {
           setView("confirm");
         } else {
-          onClose();
           router.push("/dashboard");
+          return; // le modal disparaît avec la page, pas de flash de l'accueil
         }
       } else {
         await signIn({ email, password });
-        onClose();
         router.push("/dashboard");
+        return;
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Une erreur est survenue. Réessaie.");

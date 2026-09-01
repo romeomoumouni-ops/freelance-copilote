@@ -16,14 +16,14 @@ export async function POST(req: NextRequest) {
   const sb = getAdminClient();
   if (!sb || !mailReady()) return NextResponse.json({ ok: true });
 
-  const redirectTo = `${req.nextUrl.origin}/dashboard`;
-  const { data, error } = await sb.auth.admin.generateLink({ type: "magiclink", email, options: { redirectTo } });
-  if (!error && data.properties?.action_link) {
+  const { data, error } = await sb.auth.admin.generateLink({ type: "magiclink", email });
+  if (!error && data.properties?.hashed_token) {
     const name = (data.user?.user_metadata?.name as string) || "";
+    const link = `${req.nextUrl.origin}/api/auth/confirm?token_hash=${encodeURIComponent(data.properties.hashed_token)}&type=magiclink`;
     await sendAppMail({
       to: email,
       subject: "Ton lien de confirmation Freelance Copilote",
-      html: confirmEmailHtml({ name, link: data.properties.action_link }),
+      html: confirmEmailHtml({ name, link }),
     }).catch(() => {});
   }
   return NextResponse.json({ ok: true });

@@ -31,17 +31,18 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true, needsConfirm: false });
   }
 
-  const redirectTo = `${req.nextUrl.origin}/dashboard`;
   const { data, error } = await sb.auth.admin.generateLink({
     type: "signup",
     email,
     password,
-    options: { data: { name }, redirectTo },
+    options: { data: { name } },
   });
   if (error) return signupError(error.message);
 
-  const link = data.properties?.action_link;
-  if (!link) return NextResponse.json({ error: "Création du lien de confirmation impossible. Réessaie." }, { status: 500 });
+  const tokenHash = data.properties?.hashed_token;
+  if (!tokenHash) return NextResponse.json({ error: "Création du lien de confirmation impossible. Réessaie." }, { status: 500 });
+  // notre propre porte de confirmation : redirection garantie vers l'espace
+  const link = `${req.nextUrl.origin}/api/auth/confirm?token_hash=${encodeURIComponent(tokenHash)}&type=signup`;
 
   try {
     await sendAppMail({
