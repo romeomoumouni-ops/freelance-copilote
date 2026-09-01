@@ -5,17 +5,12 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { IconX } from "@/components/icons";
 
-const groups: { title: string; items: { href: string; label: string; desc: string }[] }[] = [
-  {
-    title: "Prospection",
-    items: [
-      { href: "/dashboard", label: "Aujourd'hui", desc: "Ta vague du jour et tes chiffres" },
-      { href: "/prospects", label: "Prospects", desc: "Listes, signaux réels, accroches" },
-      { href: "/campagnes", label: "Campagnes", desc: "Séquences et relances auto" },
-      { href: "/inbox", label: "Réponses", desc: "Conclure avec l'assistant" },
-      { href: "/mailbox", label: "Boîte mail", desc: "Ta connexion Gmail" },
-    ],
-  },
+const nav: { href: string; label: string; desc: string }[] = [
+  { href: "/dashboard", label: "Aujourd'hui", desc: "Ta vague du jour et tes chiffres" },
+  { href: "/prospects", label: "Prospects", desc: "Listes, signaux réels, accroches" },
+  { href: "/campagnes", label: "Campagnes", desc: "Séquences et relances auto" },
+  { href: "/inbox", label: "Réponses", desc: "Conclure avec l'assistant" },
+  { href: "/mailbox", label: "Boîte mail", desc: "Ta connexion Gmail" },
 ];
 
 export default function Sidebar({
@@ -54,9 +49,6 @@ export default function Sidebar({
                 <span className="relative">Copilote</span>
               </span>
             </span>
-            <span className="mt-1 block text-[10px] font-semibold uppercase tracking-[0.14em] text-ink-mute">
-              prospection
-            </span>
           </Link>
           <button
             onClick={onClose}
@@ -67,38 +59,29 @@ export default function Sidebar({
           </button>
         </div>
 
-        {/* Navigation : groupes, sans icônes */}
-        <nav className="mt-4 flex-1 space-y-5 overflow-y-auto px-3">
-          {groups.map((g) => (
-            <div key={g.title}>
-              <p className="px-3.5 pb-1.5 text-[10px] font-bold uppercase tracking-[0.14em] text-ink-mute">
-                {g.title}
-              </p>
-              <div className="space-y-1">
-                {g.items.map((item) => {
-                  const active = pathname.startsWith(item.href);
-                  return (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      onClick={onClose}
-                      className={cn(
-                        "block rounded-xl px-3.5 py-2.5 transition-all duration-150",
-                        active ? "bg-brand text-ink shadow-[0_6px_16px_-8px_rgba(202,138,4,0.5)]" : "hover:bg-canvas"
-                      )}
-                    >
-                      <span className={cn("block text-[13.5px] font-bold", active ? "text-ink" : "text-ink-soft")}>
-                        {item.label}
-                      </span>
-                      <span className={cn("block text-[11px]", active ? "text-ink/70" : "text-ink-mute")}>
-                        {item.desc}
-                      </span>
-                    </Link>
-                  );
-                })}
-              </div>
-            </div>
-          ))}
+        {/* Navigation : liste simple, sans icônes */}
+        <nav className="mt-5 flex-1 space-y-1 overflow-y-auto px-3">
+          {nav.map((item) => {
+            const active = pathname.startsWith(item.href);
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={onClose}
+                className={cn(
+                  "block rounded-xl px-3.5 py-2.5 transition-all duration-150",
+                  active ? "bg-brand text-ink shadow-[0_6px_16px_-8px_rgba(202,138,4,0.5)]" : "hover:bg-canvas"
+                )}
+              >
+                <span className={cn("block text-[13.5px] font-bold", active ? "text-ink" : "text-ink-soft")}>
+                  {item.label}
+                </span>
+                <span className={cn("block text-[11px]", active ? "text-ink/70" : "text-ink-mute")}>
+                  {item.desc}
+                </span>
+              </Link>
+            );
+          })}
         </nav>
 
         {/* Pied de barre */}
