@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/auth/AuthProvider";
@@ -45,6 +45,14 @@ export default function Landing() {
   const [authView, setAuthView] = useState<AuthView | null>(null);
   const { user } = useAuth();
   const router = useRouter();
+
+  /* Retour du lien de confirmation : si la session vient d'être créée
+     via les jetons de l'URL, on file directement dans l'espace. */
+  useEffect(() => {
+    if (user && window.location.hash.includes("access_token")) {
+      router.replace("/dashboard");
+    }
+  }, [user, router]);
   const openSignup = () => (user ? router.push("/dashboard") : setAuthView("signup"));
   const openLogin = () => (user ? router.push("/dashboard") : setAuthView("login"));
 
