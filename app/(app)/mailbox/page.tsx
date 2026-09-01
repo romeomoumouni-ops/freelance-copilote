@@ -7,7 +7,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import Card from "@/components/ui/Card";
-import Badge from "@/components/ui/Badge";
 import Button from "@/components/ui/Button";
 import PageHeader from "@/components/ui/PageHeader";
 import { useToast } from "@/components/ui/Toast";
@@ -96,7 +95,6 @@ export default function MailboxPage() {
         <PageHeader
           title="Boîte mail"
           subtitle="Tes mails partent de TA boîte Gmail : c'est toi que le prospect voit, pas un robot."
-          actions={<Badge tone="green" dot>Connectée et vérifiée</Badge>}
         />
         <div className="grid gap-5 lg:grid-cols-2">
           <Card>

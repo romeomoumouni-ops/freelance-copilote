@@ -23,10 +23,6 @@ export default function Topbar({ onMenu }: { onMenu: () => void }) {
         </div>
 
         <div className="ml-auto flex items-center gap-2 sm:gap-3">
-          <span className="hidden items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1.5 text-[11px] font-bold text-emerald-700 sm:inline-flex">
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
-            Copilote actif
-          </span>
           <button
             className="relative rounded-xl border border-line bg-white p-2 text-ink-soft transition-colors hover:text-ink"
             aria-label="Notifications"
