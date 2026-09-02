@@ -44,7 +44,7 @@ export const api = {
   prospects: () => jf<{ prospects: Prospect[] }>("/api/prospection/prospects"),
   addProspects: (rows: Partial<Prospect>[]) =>
     jf<{ added: number; prospects: Prospect[] }>("/api/prospection/prospects", json({ rows })),
-  patchProspect: (patch: { id: string } & Partial<Pick<Prospect, "status" | "notes" | "contact" | "email" | "activite">>) =>
+  patchProspect: (patch: { id: string } & Partial<Pick<Prospect, "status" | "notes" | "contact" | "email" | "activite" | "service">>) =>
     jf<{ prospect: Prospect }>("/api/prospection/prospects", { ...json(patch), method: "PATCH" }),
   deleteProspect: (id: string) => jf<{ ok: true }>(`/api/prospection/prospects?id=${id}`, { method: "DELETE" }),
   analyze: (id: string) => jf<{ prospect: Prospect }>("/api/prospection/analyze", json({ id })),

@@ -12,16 +12,24 @@ export interface DraftRow {
   entreprise: string;
   email: string;
   activite: string;
+  service: string;
   contact: string;
   site: string;
 }
 
 export const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export const emptyRow = (): DraftRow => ({ entreprise: "", email: "", activite: "", contact: "", site: "" });
+export const emptyRow = (): DraftRow => ({ entreprise: "", email: "", activite: "", service: "", contact: "", site: "" });
 
 export function isEmptyRow(r: DraftRow): boolean {
-  return !r.entreprise.trim() && !r.email.trim() && !r.activite.trim() && !r.contact.trim() && !r.site.trim();
+  return (
+    !r.entreprise.trim() &&
+    !r.email.trim() &&
+    !r.activite.trim() &&
+    !r.service.trim() &&
+    !r.contact.trim() &&
+    !r.site.trim()
+  );
 }
 
 export function rowIsValid(r: DraftRow): boolean {
@@ -29,11 +37,12 @@ export function rowIsValid(r: DraftRow): boolean {
 }
 
 const COLS: { key: keyof DraftRow; label: string; placeholder: string; required?: boolean; width: string }[] = [
-  { key: "entreprise", label: "Entreprise", placeholder: "Chez Marco", required: true, width: "w-[20%]" },
-  { key: "email", label: "E-mail", placeholder: "contact@chezmarco.fr", required: true, width: "w-[24%]" },
-  { key: "activite", label: "Son activité", placeholder: "Restaurant", width: "w-[20%]" },
-  { key: "contact", label: "Contact", placeholder: "Marco", width: "w-[18%]" },
-  { key: "site", label: "Site web", placeholder: "s'il en a un", width: "w-[18%]" },
+  { key: "entreprise", label: "Entreprise", placeholder: "Chez Marco", required: true, width: "w-[18%]" },
+  { key: "email", label: "E-mail", placeholder: "contact@chezmarco.fr", required: true, width: "w-[22%]" },
+  { key: "activite", label: "Son activité", placeholder: "Restaurant", width: "w-[15%]" },
+  { key: "service", label: "Ce que tu proposes", placeholder: "Refonte du site", width: "w-[19%]" },
+  { key: "contact", label: "Contact", placeholder: "Marco", width: "w-[13%]" },
+  { key: "site", label: "Site web", placeholder: "s'il en a un", width: "w-[13%]" },
 ];
 
 /* Découpe une ligne collée : tabulation (tableur) sinon point-virgule. */
@@ -91,14 +100,14 @@ export default function ProspectTable({
   return (
     <div>
       <div className="overflow-x-auto rounded-2xl border border-line">
-        <table className="w-full min-w-[780px] border-collapse">
+        <table className="w-full min-w-[760px] border-collapse">
           <thead>
             <tr className="bg-canvas">
               <th className="w-9 border-b border-line" />
               {COLS.map((c) => (
                 <th
                   key={c.key}
-                  className={`${c.width} border-b border-line px-3 py-2.5 text-left text-[11px] font-bold uppercase tracking-wide text-ink-mute`}
+                  className={`${c.width} border-b border-line px-2.5 py-2.5 text-left text-[10.5px] font-bold uppercase tracking-wide text-ink-mute`}
                 >
                   {c.label}
                   {c.required && <span className="text-royal"> *</span>}
@@ -129,7 +138,7 @@ export default function ProspectTable({
                           onPaste={(e) => handlePaste(e, i, ci)}
                           placeholder={c.placeholder}
                           spellCheck={false}
-                          className={`h-11 w-full bg-transparent px-3 text-[13px] outline-none transition-colors placeholder:text-ink-mute/60 ${
+                          className={`h-11 w-full bg-transparent px-2.5 text-[12.5px] outline-none transition-colors placeholder:text-ink-mute/60 ${
                             fautif
                               ? "bg-red-50 text-red-700 ring-1 ring-inset ring-red-300"
                               : "text-ink focus:bg-primary-50/50"

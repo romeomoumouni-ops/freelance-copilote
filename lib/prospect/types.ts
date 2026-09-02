@@ -64,6 +64,7 @@ export interface Prospect {
   contact?: string; // prénom ou nom de la personne
   email?: string;
   activite?: string; // ce que fait l'entreprise, en quelques mots
+  service?: string; // ce que le freelance veut lui proposer
   site?: string;
   ville?: string;
   notes?: string;

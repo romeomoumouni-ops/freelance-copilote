@@ -25,18 +25,32 @@ function siteLinks(site?: string) {
   return { href, label };
 }
 
-/* Pastille de score : lecture de donnée, pas badge décoratif. */
-function ScoreChip({ score }: { score: number }) {
-  const tone =
+/* Priorité d'attaque, en mots : un « 54/100 » se lisait à tort comme un
+   taux de remplissage de la fiche. Elle ne dépend que de ce qu'on a
+   VRAIMENT constaté sur le site ; sans site, il n'y a rien à constater. */
+function PriorityChip({ score, analysable }: { score: number; analysable: boolean }) {
+  if (!analysable) {
+    return (
+      <span
+        className="shrink-0 rounded-md border border-line bg-canvas px-2 py-1 text-[10px] font-extrabold uppercase tracking-[0.04em] text-ink-mute"
+        title="Ajoute son site pour que l'outil détecte ses problèmes et calcule une priorité."
+      >
+        Sans site à analyser
+      </span>
+    );
+  }
+  const [label, tone] =
     score >= 60
-      ? "border-amber-300 bg-amber-100 text-amber-900"
+      ? ["Priorité haute", "border-amber-400 bg-amber-200 text-amber-900"]
       : score >= 35
-        ? "border-primary-300 bg-primary-100 text-[#6B4E00]"
-        : "border-line bg-canvas text-ink-mute";
+        ? ["Priorité moyenne", "border-primary-300 bg-primary-200 text-[#6B4E00]"]
+        : ["Priorité basse", "border-line bg-canvas text-ink-mute"];
   return (
-    <span className={`flex shrink-0 items-baseline gap-px rounded-md border px-2 py-1 ${tone}`}>
-      <span className="text-[13px] font-extrabold leading-none">{score}</span>
-      <span className="text-[9.5px] font-bold leading-none opacity-70">/100</span>
+    <span
+      className={`shrink-0 rounded-md border px-2 py-1 text-[10px] font-extrabold uppercase tracking-[0.04em] ${tone}`}
+      title={`Urgence estimée : ${score}/100, d'après les problèmes détectés sur son site.`}
+    >
+      {label}
     </span>
   );
 }
@@ -68,6 +82,7 @@ export default function ProspectsPage() {
       entreprise: r.entreprise.trim(),
       email: r.email.trim(),
       activite: r.activite.trim() || undefined,
+      service: r.service.trim() || undefined,
       contact: r.contact.trim() || undefined,
       site: r.site.trim() || undefined,
     }));
@@ -112,14 +127,14 @@ export default function ProspectsPage() {
     const q = filter.trim().toLowerCase();
     return [...prospects]
       .filter((p) => !q || p.entreprise.toLowerCase().includes(q) || (p.email || "").includes(q))
-      .sort((a, b) => b.score - a.score);
+      .sort((a, b) => b.score - a.score || a.entreprise.localeCompare(b.entreprise));
   }, [prospects, filter]);
 
   return (
     <div className="animate-fade-up">
       <PageHeader
         title="Prospects"
-        subtitle="Chaque prospect est analysé sur son vrai site : signaux concrets, score d'urgence, accroche prête."
+        subtitle="Ce que fait l'entreprise, ce que tu lui proposes, et son site quand elle en a un : de quoi écrire une accroche sur mesure."
         actions={
           <Button variant="primary" className="!bg-royal hover:!bg-royal-dark" icon={<IconPlus size={15} />} onClick={() => setOpenImport(true)}>
             Ajouter des prospects
@@ -197,7 +212,7 @@ Remplis le tableau : entreprise, e-mail, et son activité en deux mots. Si tu as
                       {s.label}
                     </Badge>
                   ))}
-                  <ScoreChip score={p.score} />
+                  <PriorityChip score={p.score} analysable={!!p.site} />
                 </div>
               </div>
             </Card>
@@ -211,9 +226,9 @@ Remplis le tableau : entreprise, e-mail, et son activité en deux mots. Si tu as
         <p className="text-[13px] leading-relaxed text-ink-soft">
           Une ligne par prospect. L&apos;<span className="font-semibold text-ink">entreprise</span> et
           l&apos;<span className="font-semibold text-ink">e-mail</span> sont obligatoires : sans e-mail, impossible de le
-          contacter. Son <span className="font-semibold text-ink">activité</span> en un ou deux mots (restaurant,
-          clinique, garage…) sert à personnaliser ton message. Le site, si elle en a un, permet en plus de détecter
-          ses problèmes techniques.
+          contacter. Son <span className="font-semibold text-ink">activité</span> et surtout
+          <span className="font-semibold text-ink"> ce que tu lui proposes</span> servent à écrire ton mail d&apos;accroche.
+          Le site, si elle en a un, permet en plus de détecter ses problèmes techniques.
         </p>
         <p className="mt-1.5 text-[12px] text-ink-mute">
           Tu as déjà ta liste dans Excel ou Google Sheets ? Copie tes colonnes et colle-les directement dans le tableau.
@@ -327,7 +342,11 @@ function ProspectDetail({
             </div>
           </div>
           {p.signals.length === 0 ? (
-            <p className="mt-2 text-[12.5px] text-ink-mute">{p.site ? "Pas encore analysé." : "Ce prospect n'a pas de site : c'est déjà un excellent angle d'attaque."}</p>
+            <p className="mt-2 text-[12.5px] leading-relaxed text-ink-mute">
+              {p.site
+                ? "Pas encore analysé."
+                : "Aucun site renseigné : l'outil n'affirme rien sur sa présence en ligne. Ajoute son site pour détecter ses problèmes, ou appuie-toi sur son activité et sur ce que tu lui proposes."}
+            </p>
           ) : (
             <ul className="mt-2.5 space-y-2">
               {p.signals.map((s) => (
@@ -363,6 +382,24 @@ function ProspectDetail({
                 Copier le lien
               </Button>
             </div>
+          </div>
+        )}
+
+        {/* Contexte du prospect */}
+        {(p.activite || p.service) && (
+          <div className="grid gap-2 sm:grid-cols-2">
+            {p.activite && (
+              <div className="rounded-2xl bg-canvas p-3.5">
+                <p className="text-[11px] font-bold uppercase tracking-wide text-ink-mute">Son activité</p>
+                <p className="mt-1 text-[13px] font-semibold text-ink">{p.activite}</p>
+              </div>
+            )}
+            {p.service && (
+              <div className="rounded-2xl bg-canvas p-3.5">
+                <p className="text-[11px] font-bold uppercase tracking-wide text-ink-mute">Ce que tu lui proposes</p>
+                <p className="mt-1 text-[13px] font-semibold text-ink">{p.service}</p>
+              </div>
+            )}
           </div>
         )}
 

@@ -22,6 +22,7 @@ export function fillVars(
   return text
     .replace(/\{\{entreprise\}\}/g, p.entreprise)
     .replace(/\{\{activite\}\}/g, p.activite || "votre activité")
+    .replace(/\{\{service\}\}/g, p.service || "mon accompagnement")
     .replace(/\{\{contact\}\}/g, p.contact || "")
     .replace(/\{\{site\}\}/g, domainOf(p.site) || "votre site")
     .replace(/\{\{signal\}\}/g, signal)
@@ -40,16 +41,21 @@ export async function generateAccroche(
   const sig1 = p.signals[0];
   const sig2 = p.signals[1];
 
-  if (hasAI() && sig1) {
+  if (hasAI() && (sig1 || p.activite || p.service)) {
     try {
       const prompt = `Écris un mail de prospection à froid (objet + corps) pour ce prospect.
-Entreprise : ${p.entreprise}${p.activite ? ` (${p.activite})` : ""}${p.contact ? `, contact : ${p.contact}` : ""}${p.site ? `, site : ${p.site}` : "  (aucun site web)"}.
-Constats réels faits sur leur site : ${p.signals
+Entreprise : ${p.entreprise}${p.activite ? `, activité : ${p.activite}` : ""}${p.contact ? `, contact : ${p.contact}` : ""}.
+${p.service ? `Ce que l'expéditeur veut lui proposer : ${p.service}.` : ""}
+${
+  p.signals.length
+    ? `Constats réels faits sur leur site (${p.site}) : ${p.signals
         .slice(0, 3)
         .map((s) => s.detail)
-        .join(" | ")}.
+        .join(" | ")}.`
+    : "Aucun site n'a été analysé : n'affirme RIEN sur leur site web, ne dis pas qu'ils n'en ont pas."
+}
 Expéditeur : ${fromName}, freelance.
-Règles : 90 mots max, un seul constat mis en avant, proposition d'un mini-audit gratuit déjà prêt, aucune promesse chiffrée inventée, pas de lien, se termine par le prénom de l'expéditeur.
+Règles : 90 mots max${p.signals.length ? ", un seul constat mis en avant" : ""}, aucune promesse chiffrée inventée, aucun fait inventé, pas de lien, se termine par le prénom de l'expéditeur.
 Réponds au format exact :
 OBJET: ...
 CORPS:
@@ -64,18 +70,30 @@ CORPS:
 
   const dom = domainOf(p.site);
   const activite = p.activite?.trim();
-  const subject = dom
-    ? `${p.entreprise} : une remarque sur ${dom}`
-    : activite
-      ? `${p.entreprise} : une question sur votre visibilité`
-      : `Une idée pour ${p.entreprise}`;
+  const service = p.service?.trim();
   const hello = p.contact ? `Bonjour ${p.contact},` : "Bonjour,";
 
+  const subject = dom
+    ? `${p.entreprise} : une remarque sur ${dom}`
+    : service
+      ? `${p.entreprise} : une idée pour vous`
+      : `Une idée pour ${p.entreprise}`;
+
+  /* Sans site analysé, on n'affirme RIEN sur leur présence en ligne :
+     on s'appuie sur leur activité et sur ce que le freelance propose. */
   const ouverture = dom
     ? `En préparant ma journée, je suis passé sur le site de ${p.entreprise} (${dom}).`
     : activite
       ? `Je suis tombé sur ${p.entreprise} en cherchant des professionnels de votre secteur (${activite.toLowerCase()}).`
-      : `En préparant ma journée, j'ai cherché ${p.entreprise} en ligne.`;
+      : `Je me permets de vous écrire au sujet de ${p.entreprise}.`;
+
+  const proposition = service
+    ? `Je suis freelance, et voici ce que je peux faire pour vous : ${service}.`
+    : "C'est exactement le genre de choses que je corrige pour mes clients, en général en quelques jours.";
+
+  const conclusion = dom
+    ? "J'ai préparé un mini-audit gratuit de votre site, avec les points constatés et ce que ça change. Si vous voulez le recevoir, répondez simplement à ce mail."
+    : "Si le sujet vous intéresse, répondez simplement à ce mail et je vous montre concrètement ce que ça donnerait chez vous.";
 
   const lines = [
     hello,
@@ -84,12 +102,8 @@ CORPS:
     sig1 ? `Un point m'a arrêté : ${sig1.hook}.` : "",
     sig2 ? `Et en regardant de plus près, ${sig2.hook}.` : "",
     "",
-    activite && !dom
-      ? "Pour une activité comme la vôtre, c'est dommage : vos clients vous cherchent en ligne avant de vous appeler, et aujourd'hui ils ne vous trouvent pas."
-      : "C'est exactement le genre de choses que je corrige pour mes clients, en général en quelques jours.",
-    dom
-      ? "J'ai préparé un mini-audit gratuit de votre site, avec les points constatés et ce que ça change. Si vous voulez le recevoir, répondez simplement à ce mail."
-      : "Si le sujet vous intéresse, répondez simplement à ce mail et je vous montre concrètement ce que ça donnerait.",
+    proposition,
+    conclusion,
     "",
     "Bonne journée,",
     fromName || "{{moi}}",
@@ -155,10 +169,9 @@ export async function generateReplies(p: Prospect, fromName: string, theirMessag
   if (hasAI() && theirMessage) {
     try {
       const prompt = `Un prospect (${p.entreprise}) répond ceci à mon mail de prospection : "${theirMessage}".
-Contexte réel : ${p.signals
-        .slice(0, 2)
-        .map((s) => s.detail)
-        .join(" | ")}.
+Contexte réel : ${p.activite ? `activité : ${p.activite}. ` : ""}${p.service ? `ce que je lui propose : ${p.service}. ` : ""}${
+        p.signals.length ? p.signals.slice(0, 2).map((s) => s.detail).join(" | ") : "aucun constat technique."
+      }
 Propose 3 réponses possibles (une chaleureuse orientée rendez-vous, une qui répond à une objection de prix, une pour un « pas maintenant » qui garde la porte ouverte). 60 mots max chacune, vouvoiement, signées ${fromName}.
 Format exact :
 1: ...
@@ -218,9 +231,11 @@ export function generateCallScript(p: Prospect, fromName: string): CallScript {
     ouverture: `Bonjour, ${fromName || "..."} à l'appareil. Je vous appelle au sujet de ${dom} : je vous ai envoyé un mail il y a quelques jours, je vous dérange deux minutes ?`,
     constat: sig
       ? `Je vous appelle parce que ${sig.hook}. Concrètement : ${sig.detail}`
-      : p.activite
-        ? `Je vous appelle parce que dans votre secteur (${p.activite.toLowerCase()}), la visibilité en ligne amène beaucoup de clients, et là vous passez à côté.`
-        : `Je vous appelle parce que j'ai relevé quelques points améliorables sur votre présence en ligne.`,
+      : p.service
+        ? `Je vous appelle parce que je peux vous aider sur un point précis : ${p.service}.`
+        : p.activite
+          ? `Je vous appelle parce que dans votre secteur (${p.activite.toLowerCase()}), il y a souvent des choses simples à améliorer pour attirer plus de clients.`
+          : `Je vous appelle parce que j'ai quelques idées pour vous amener plus de clients.`,
     questions: [
       "Est-ce que votre site vous amène des clients aujourd'hui, ou pas vraiment ?",
       "Qui s'occupe de votre site actuellement ?",

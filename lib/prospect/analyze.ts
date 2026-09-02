@@ -132,16 +132,10 @@ export function computeSignals(audit: SiteAudit | null, hasSite: boolean): Signa
   const s: Signal[] = [];
   const year = new Date().getFullYear();
 
-  if (!hasSite) {
-    s.push({
-      key: "no-site",
-      label: "Pas de site",
-      detail: "Aucun site web trouvé pour cette entreprise.",
-      severity: 3,
-      hook: "je n'ai pas trouvé de site web à votre nom, et vos futurs clients non plus",
-    });
-    return s;
-  }
+  /* Champ site laissé vide = on ne SAIT PAS si l'entreprise en a un.
+     On n'invente donc aucun signal : affirmer « vous n'avez pas de site »
+     à quelqu'un qui en a un ruinerait la crédibilité du freelance. */
+  if (!hasSite) return s;
   if (!audit) return s;
 
   if (!audit.ok) {
@@ -249,6 +243,10 @@ export function computeSignals(audit: SiteAudit | null, hasSite: boolean): Signa
 /** Score de priorité : plus il y a de problèmes graves (et un e-mail pour
     écrire), plus le prospect vaut la peine d'être contacté vite. */
 export function computeScore(signals: Signal[], hasEmail: boolean): number {
+  /* Priorité = ce qu'on a RÉELLEMENT constaté. Sans site analysé, aucun
+     constat, donc pas de priorité : 0 signifie « non analysé », pas
+     « mauvais prospect ». */
+  if (!signals.length) return 0;
   const sev = signals.reduce((sum, s) => sum + s.severity, 0);
   return Math.min(100, 15 + sev * 9 + (hasEmail ? 12 : 0));
 }
