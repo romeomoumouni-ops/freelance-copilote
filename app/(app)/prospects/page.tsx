@@ -17,9 +17,21 @@ import { api, type CallScript, type Prospect } from "@/lib/prospect/client";
 import ProspectTable, { emptyRow, isEmptyRow, rowIsValid, type DraftRow } from "@/components/prospects/ProspectTable";
 import { STATUS_LABELS, type ProspectStatus } from "@/lib/prospect/types";
 
-import type { BadgeTone } from "@/components/ui/Badge";
-
-const scoreTone = (s: number): BadgeTone => (s >= 60 ? "orange" : s >= 35 ? "violet" : "gray");
+/* Pastille de score : lecture de donnée, pas badge décoratif. */
+function ScoreChip({ score }: { score: number }) {
+  const tone =
+    score >= 60
+      ? "border-amber-300 bg-amber-100 text-amber-900"
+      : score >= 35
+        ? "border-primary-300 bg-primary-100 text-[#6B4E00]"
+        : "border-line bg-canvas text-ink-mute";
+  return (
+    <span className={`flex shrink-0 items-baseline gap-px rounded-md border px-2 py-1 ${tone}`}>
+      <span className="text-[13px] font-extrabold leading-none">{score}</span>
+      <span className="text-[9.5px] font-bold leading-none opacity-70">/100</span>
+    </span>
+  );
+}
 
 export default function ProspectsPage() {
   const toast = useToast();
@@ -47,8 +59,9 @@ export default function ProspectsPage() {
     const rows = remplies.filter(rowIsValid).map((r) => ({
       entreprise: r.entreprise.trim(),
       email: r.email.trim(),
-      site: r.site.trim() || undefined,
+      activite: r.activite.trim() || undefined,
       contact: r.contact.trim() || undefined,
+      site: r.site.trim() || undefined,
     }));
     if (!rows.length) {
       toast("Remplis au moins une ligne avec un nom d'entreprise et un e-mail valide.", "warning");
@@ -128,7 +141,7 @@ export default function ProspectsPage() {
         <Card className="py-12 text-center">
           <p className="text-[15px] font-bold text-ink">Commence par ajouter tes prospects.</p>
           <p className="mx-auto mt-2 max-w-md text-[13px] leading-relaxed text-ink-mute">
-Remplis le tableau (entreprise + e-mail), ajoute leur site si tu l'as : l'outil lit chaque site, repère ce qui cloche et écrit ton accroche.
+Remplis le tableau : entreprise, e-mail, et son activité en deux mots. Si tu as son site, l'outil le lit et repère ce qui cloche pour écrire ton accroche.
           </p>
           <Button variant="primary" className="mt-5 !bg-royal hover:!bg-royal-dark" onClick={() => setOpenImport(true)}>
             Ajouter mes premiers prospects
@@ -147,8 +160,9 @@ Remplis le tableau (entreprise + e-mail), ajoute leur site si tu l'as : l'outil 
                     </Badge>
                   </div>
                   <p className="mt-0.5 truncate text-[12px] text-ink-mute">
-                    {p.email || "Pas d'e-mail"}
-                    {p.site ? ` · ${p.site.replace(/^https?:\/\//, "")}` : " · Pas de site"}
+                    {p.activite ? <span className="font-semibold text-ink-soft">{p.activite} · </span> : null}
+                    {p.email}
+                    {p.site ? ` · ${p.site.replace(/^https?:\/\//, "")}` : ""}
                   </p>
                 </div>
                 <div className="flex flex-wrap items-center gap-1.5">
@@ -157,9 +171,7 @@ Remplis le tableau (entreprise + e-mail), ajoute leur site si tu l'as : l'outil 
                       {s.label}
                     </Badge>
                   ))}
-                  <Badge tone={scoreTone(p.score)} className="!text-[12px]">
-                    {p.score}/100
-                  </Badge>
+                  <ScoreChip score={p.score} />
                 </div>
               </div>
             </Card>
@@ -172,7 +184,9 @@ Remplis le tableau (entreprise + e-mail), ajoute leur site si tu l'as : l'outil 
         <p className="text-[13px] leading-relaxed text-ink-soft">
           Une ligne par prospect. L&apos;<span className="font-semibold text-ink">entreprise</span> et
           l&apos;<span className="font-semibold text-ink">e-mail</span> sont obligatoires : sans e-mail, impossible de le
-          contacter. Le site permet de détecter ses problèmes et d&apos;écrire une accroche sur mesure.
+          contacter. Son <span className="font-semibold text-ink">activité</span> en un ou deux mots (restaurant,
+          clinique, garage…) sert à personnaliser ton message. Le site, si elle en a un, permet en plus de détecter
+          ses problèmes techniques.
         </p>
         <p className="mt-1.5 text-[12px] text-ink-mute">
           Tu as déjà ta liste dans Excel ou Google Sheets ? Copie tes colonnes et colle-les directement dans le tableau.
@@ -181,7 +195,7 @@ Remplis le tableau (entreprise + e-mail), ajoute leur site si tu l'as : l'outil 
           <ProspectTable rows={draft} onChange={setDraft} />
         </div>
         <Button full variant="primary" className="mt-5 !bg-royal hover:!bg-royal-dark" onClick={runImport} disabled={importing}>
-          {importing ? "Ajout en cours" : "Ajouter et analyser les sites"}
+          {importing ? "Ajout en cours" : "Ajouter ces prospects"}
         </Button>
       </Modal>
 

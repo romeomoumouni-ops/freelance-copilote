@@ -43,6 +43,7 @@ export async function POST(req: NextRequest) {
       entreprise,
       contact: String(r.contact || "").trim() || undefined,
       email,
+      activite: String(r.activite || "").trim() || undefined,
       site: String(r.site || "").trim() || undefined,
       ville: String(r.ville || "").trim() || undefined,
       status: "nouveau",
@@ -69,12 +70,13 @@ export async function PATCH(req: NextRequest) {
   const uid = await getUserId(req);
   if (!uid) return NextResponse.json({ error: "Connecte-toi pour continuer." }, { status: 401 });
   const body = await req.json().catch(() => ({}));
-  const { id, status, notes, contact, email } = body as {
+  const { id, status, notes, contact, email, activite } = body as {
     id?: string;
     status?: ProspectStatus;
     notes?: string;
     contact?: string;
     email?: string;
+    activite?: string;
   };
   if (!id) return NextResponse.json({ error: "id manquant" }, { status: 400 });
   const patch: Partial<Prospect> = {};
@@ -82,6 +84,7 @@ export async function PATCH(req: NextRequest) {
   if (notes !== undefined) patch.notes = notes;
   if (contact !== undefined) patch.contact = contact;
   if (email !== undefined) patch.email = email.trim().toLowerCase() || undefined;
+  if (activite !== undefined) patch.activite = activite.trim() || undefined;
   const p = await updateProspect(uid, id, patch);
   if (!p) return NextResponse.json({ error: "Prospect introuvable" }, { status: 404 });
   return NextResponse.json({ prospect: p });

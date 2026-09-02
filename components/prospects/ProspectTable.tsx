@@ -11,16 +11,17 @@ import { IconPlus, IconTrash } from "@/components/icons";
 export interface DraftRow {
   entreprise: string;
   email: string;
-  site: string;
+  activite: string;
   contact: string;
+  site: string;
 }
 
 export const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export const emptyRow = (): DraftRow => ({ entreprise: "", email: "", site: "", contact: "" });
+export const emptyRow = (): DraftRow => ({ entreprise: "", email: "", activite: "", contact: "", site: "" });
 
 export function isEmptyRow(r: DraftRow): boolean {
-  return !r.entreprise.trim() && !r.email.trim() && !r.site.trim() && !r.contact.trim();
+  return !r.entreprise.trim() && !r.email.trim() && !r.activite.trim() && !r.contact.trim() && !r.site.trim();
 }
 
 export function rowIsValid(r: DraftRow): boolean {
@@ -28,10 +29,11 @@ export function rowIsValid(r: DraftRow): boolean {
 }
 
 const COLS: { key: keyof DraftRow; label: string; placeholder: string; required?: boolean; width: string }[] = [
-  { key: "entreprise", label: "Entreprise", placeholder: "Chez Marco", required: true, width: "w-[24%]" },
-  { key: "email", label: "E-mail", placeholder: "contact@chezmarco.fr", required: true, width: "w-[28%]" },
-  { key: "site", label: "Site web", placeholder: "chezmarco.fr", width: "w-[26%]" },
-  { key: "contact", label: "Prénom du contact", placeholder: "Marco", width: "w-[22%]" },
+  { key: "entreprise", label: "Entreprise", placeholder: "Chez Marco", required: true, width: "w-[20%]" },
+  { key: "email", label: "E-mail", placeholder: "contact@chezmarco.fr", required: true, width: "w-[24%]" },
+  { key: "activite", label: "Son activité", placeholder: "Restaurant", width: "w-[20%]" },
+  { key: "contact", label: "Contact", placeholder: "Marco", width: "w-[18%]" },
+  { key: "site", label: "Site web", placeholder: "s'il en a un", width: "w-[18%]" },
 ];
 
 /* Découpe une ligne collée : tabulation (tableur) sinon point-virgule. */
@@ -89,7 +91,7 @@ export default function ProspectTable({
   return (
     <div>
       <div className="overflow-x-auto rounded-2xl border border-line">
-        <table className="w-full min-w-[680px] border-collapse">
+        <table className="w-full min-w-[780px] border-collapse">
           <thead>
             <tr className="bg-canvas">
               <th className="w-9 border-b border-line" />

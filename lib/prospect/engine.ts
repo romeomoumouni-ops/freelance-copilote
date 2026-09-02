@@ -21,6 +21,7 @@ export function fillVars(
   const signal = p.signals[0]?.hook || "j'ai repéré quelques points améliorables sur votre présence en ligne";
   return text
     .replace(/\{\{entreprise\}\}/g, p.entreprise)
+    .replace(/\{\{activite\}\}/g, p.activite || "votre activité")
     .replace(/\{\{contact\}\}/g, p.contact || "")
     .replace(/\{\{site\}\}/g, domainOf(p.site) || "votre site")
     .replace(/\{\{signal\}\}/g, signal)
@@ -42,7 +43,7 @@ export async function generateAccroche(
   if (hasAI() && sig1) {
     try {
       const prompt = `Écris un mail de prospection à froid (objet + corps) pour ce prospect.
-Entreprise : ${p.entreprise}${p.contact ? `, contact : ${p.contact}` : ""}${p.site ? `, site : ${p.site}` : ""}.
+Entreprise : ${p.entreprise}${p.activite ? ` (${p.activite})` : ""}${p.contact ? `, contact : ${p.contact}` : ""}${p.site ? `, site : ${p.site}` : "  (aucun site web)"}.
 Constats réels faits sur leur site : ${p.signals
         .slice(0, 3)
         .map((s) => s.detail)
@@ -62,25 +63,37 @@ CORPS:
   }
 
   const dom = domainOf(p.site);
-  const subject = sig1
-    ? `${p.entreprise} : une remarque sur ${dom || "votre présence en ligne"}`
-    : `Une idée pour ${p.entreprise}`;
+  const activite = p.activite?.trim();
+  const subject = dom
+    ? `${p.entreprise} : une remarque sur ${dom}`
+    : activite
+      ? `${p.entreprise} : une question sur votre visibilité`
+      : `Une idée pour ${p.entreprise}`;
   const hello = p.contact ? `Bonjour ${p.contact},` : "Bonjour,";
+
+  const ouverture = dom
+    ? `En préparant ma journée, je suis passé sur le site de ${p.entreprise} (${dom}).`
+    : activite
+      ? `Je suis tombé sur ${p.entreprise} en cherchant des professionnels de votre secteur (${activite.toLowerCase()}).`
+      : `En préparant ma journée, j'ai cherché ${p.entreprise} en ligne.`;
+
   const lines = [
     hello,
     "",
-    dom
-      ? `En préparant ma journée, je suis passé sur le site de ${p.entreprise} (${dom}).`
-      : `En préparant ma journée, j'ai cherché ${p.entreprise} en ligne.`,
+    ouverture,
     sig1 ? `Un point m'a arrêté : ${sig1.hook}.` : "",
     sig2 ? `Et en regardant de plus près, ${sig2.hook}.` : "",
     "",
-    "C'est exactement le genre de choses que je corrige pour mes clients, en général en quelques jours.",
-    "J'ai préparé un mini-audit gratuit de votre site, avec les points constatés et ce que ça change. Si vous voulez le recevoir, répondez simplement à ce mail.",
+    activite && !dom
+      ? "Pour une activité comme la vôtre, c'est dommage : vos clients vous cherchent en ligne avant de vous appeler, et aujourd'hui ils ne vous trouvent pas."
+      : "C'est exactement le genre de choses que je corrige pour mes clients, en général en quelques jours.",
+    dom
+      ? "J'ai préparé un mini-audit gratuit de votre site, avec les points constatés et ce que ça change. Si vous voulez le recevoir, répondez simplement à ce mail."
+      : "Si le sujet vous intéresse, répondez simplement à ce mail et je vous montre concrètement ce que ça donnerait.",
     "",
     "Bonne journée,",
     fromName || "{{moi}}",
-  ].filter((l) => l !== null);
+  ].filter((l) => l !== null && l !== undefined);
   return { subject, body: lines.join("\n").replace(/\n{3,}/g, "\n\n"), source: "template" };
 }
 
@@ -93,7 +106,7 @@ export function defaultSteps(): CampaignStep[] {
       subject: "{{entreprise}} : une remarque sur {{site}}",
       body: `Bonjour {{contact}},
 
-En préparant ma journée, je suis passé sur le site de {{entreprise}}. Un point m'a arrêté : {{signal}}.
+En préparant ma journée, je me suis intéressé à {{entreprise}}. Un point m'a arrêté : {{signal}}.
 
 C'est exactement le genre de choses que je corrige pour mes clients, en général en quelques jours.
 
@@ -205,7 +218,9 @@ export function generateCallScript(p: Prospect, fromName: string): CallScript {
     ouverture: `Bonjour, ${fromName || "..."} à l'appareil. Je vous appelle au sujet de ${dom} : je vous ai envoyé un mail il y a quelques jours, je vous dérange deux minutes ?`,
     constat: sig
       ? `Je vous appelle parce que ${sig.hook}. Concrètement : ${sig.detail}`
-      : `Je vous appelle parce que j'ai relevé quelques points améliorables sur votre présence en ligne.`,
+      : p.activite
+        ? `Je vous appelle parce que dans votre secteur (${p.activite.toLowerCase()}), la visibilité en ligne amène beaucoup de clients, et là vous passez à côté.`
+        : `Je vous appelle parce que j'ai relevé quelques points améliorables sur votre présence en ligne.`,
     questions: [
       "Est-ce que votre site vous amène des clients aujourd'hui, ou pas vraiment ?",
       "Qui s'occupe de votre site actuellement ?",
