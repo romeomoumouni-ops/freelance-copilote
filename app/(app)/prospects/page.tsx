@@ -12,7 +12,7 @@ import Modal from "@/components/ui/Modal";
 import PageHeader from "@/components/ui/PageHeader";
 import { useToast } from "@/components/ui/Toast";
 import { useAuth } from "@/components/auth/AuthProvider";
-import { IconCopy, IconExternal, IconPlus, IconRefresh, IconSearch, IconTrash } from "@/components/icons";
+import { IconCopy, IconExternal, IconPlus, IconRefresh, IconSearch, IconSend, IconTrash } from "@/components/icons";
 import { api, type CallScript, type Prospect } from "@/lib/prospect/client";
 import ProspectTable, { emptyRow, isEmptyRow, rowIsValid, type DraftRow } from "@/components/prospects/ProspectTable";
 import { STATUS_LABELS, type ProspectStatus } from "@/lib/prospect/types";
@@ -23,36 +23,6 @@ function siteLinks(site?: string) {
   const href = /^https?:\/\//i.test(site) ? site : `https://${site}`;
   const label = site.replace(/^https?:\/\//i, "").replace(/^www\./i, "").replace(/\/$/, "");
   return { href, label };
-}
-
-/* Priorité d'attaque, en mots : un « 54/100 » se lisait à tort comme un
-   taux de remplissage de la fiche. Elle ne dépend que de ce qu'on a
-   VRAIMENT constaté sur le site ; sans site, il n'y a rien à constater. */
-function PriorityChip({ score, analysable }: { score: number; analysable: boolean }) {
-  if (!analysable) {
-    return (
-      <span
-        className="shrink-0 rounded-md border border-line bg-canvas px-2 py-1 text-[10px] font-extrabold uppercase tracking-[0.04em] text-ink-mute"
-        title="Ajoute son site pour que l'outil détecte ses problèmes et calcule une priorité."
-      >
-        Sans site à analyser
-      </span>
-    );
-  }
-  const [label, tone] =
-    score >= 60
-      ? ["Priorité haute", "border-amber-400 bg-amber-200 text-amber-900"]
-      : score >= 35
-        ? ["Priorité moyenne", "border-primary-300 bg-primary-200 text-[#6B4E00]"]
-        : ["Priorité basse", "border-line bg-canvas text-ink-mute"];
-  return (
-    <span
-      className={`shrink-0 rounded-md border px-2 py-1 text-[10px] font-extrabold uppercase tracking-[0.04em] ${tone}`}
-      title={`Urgence estimée : ${score}/100, d'après les problèmes détectés sur son site.`}
-    >
-      {label}
-    </span>
-  );
 }
 
 export default function ProspectsPage() {
@@ -125,9 +95,9 @@ export default function ProspectsPage() {
 
   const shown = useMemo(() => {
     const q = filter.trim().toLowerCase();
-    return [...prospects]
-      .filter((p) => !q || p.entreprise.toLowerCase().includes(q) || (p.email || "").includes(q))
-      .sort((a, b) => b.score - a.score || a.entreprise.localeCompare(b.entreprise));
+    return prospects.filter(
+      (p) => !q || p.entreprise.toLowerCase().includes(q) || (p.email || "").includes(q)
+    );
   }, [prospects, filter]);
 
   return (
@@ -206,14 +176,13 @@ Remplis le tableau : entreprise, e-mail, et son activité en deux mots. Si tu as
                     ) : null}
                   </p>
                 </div>
-                <div className="flex flex-wrap items-center gap-1.5">
-                  {p.signals.slice(0, 3).map((s) => (
-                    <Badge key={s.key} tone={s.severity === 3 ? "red" : s.severity === 2 ? "orange" : "gray"}>
-                      {s.label}
-                    </Badge>
-                  ))}
-                  <PriorityChip score={p.score} analysable={!!p.site} />
-                </div>
+                {/* Rien à signaler tant que l'essentiel est là : nom et e-mail */}
+                {(!p.entreprise?.trim() || !p.email?.trim()) && (
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    {!p.entreprise?.trim() && <Badge tone="red">Nom d&apos;entreprise manquant</Badge>}
+                    {!p.email?.trim() && <Badge tone="red">Adresse e-mail manquante</Badge>}
+                  </div>
+                )}
               </div>
             </Card>
             );
@@ -271,6 +240,15 @@ function ProspectDetail({
   const { user } = useAuth();
   const [busy, setBusy] = useState<string | null>(null);
   const [script, setScript] = useState<CallScript | null>(null);
+  const [subject, setSubject] = useState(p.accroche?.subject ?? "");
+  const [body, setBody] = useState(p.accroche?.body ?? "");
+
+  // on repart du brouillon enregistré à chaque changement de prospect
+  useEffect(() => {
+    setSubject(p.accroche?.subject ?? "");
+    setBody(p.accroche?.body ?? "");
+    setScript(null);
+  }, [p.id, p.accroche?.subject, p.accroche?.body]);
   const auditPath = `/audit/${user?.id}/${p.id}`;
 
   async function run(label: string, fn: () => Promise<void>) {
@@ -403,25 +381,88 @@ function ProspectDetail({
           </div>
         )}
 
-        {/* Accroche */}
-        <div className="rounded-2xl bg-canvas p-4">
-          <div className="flex items-center justify-between gap-2">
-            <p className="text-[12px] font-bold uppercase tracking-wide text-ink-mute">Ton mail d'accroche</p>
-            <Button size="sm" variant="secondary" disabled={busy === "accroche"} onClick={() => run("accroche", async () => { await api.accroche(p.id); await onChanged(); })}>
-              {busy === "accroche" ? "Écriture..." : p.accroche ? "Réécrire" : "Écrire mon accroche"}
+        {/* Écrire et envoyer le mail : à la main, ou avec l'aide de l'IA */}
+        <div className="rounded-2xl border-2 border-ink bg-white p-4 shadow-[4px_4px_0_0_#FFEE66]">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <p className="text-[13.5px] font-bold text-ink">Ton mail</p>
+              <p className="text-[11.5px] text-ink-mute">
+                Écris-le toi-même, ou laisse l&apos;IA proposer une accroche que tu corriges ensuite.
+              </p>
+            </div>
+            <Button
+              size="sm"
+              variant="secondary"
+              disabled={busy === "accroche"}
+              onClick={() =>
+                run("accroche", async () => {
+                  const { accroche } = await api.accroche(p.id);
+                  setSubject(accroche.subject);
+                  setBody(accroche.body);
+                  toast(accroche.source === "ia" ? "Accroche écrite par l'IA." : "Accroche proposée : corrige-la à ta main.");
+                })
+              }
+            >
+              {busy === "accroche" ? "Écriture..." : "L'IA écrit pour moi"}
             </Button>
           </div>
-          {p.accroche ? (
-            <div className="mt-2.5">
-              <p className="text-[13px] font-bold text-ink">{p.accroche.subject}</p>
-              <pre className="mt-2 whitespace-pre-wrap font-sans text-[12.5px] leading-relaxed text-ink-soft">{p.accroche.body}</pre>
-              <Button size="sm" variant="primary" className="mt-3" icon={<IconCopy size={13} />} onClick={() => copy(`${p.accroche!.subject}\n\n${p.accroche!.body}`, "Accroche copiée.")}>
-                Copier
-              </Button>
-            </div>
-          ) : (
-            <p className="mt-2 text-[12.5px] text-ink-mute">Fondée sur ses vrais signaux, pas sur du blabla générique.</p>
-          )}
+
+          <input
+            value={subject}
+            onChange={(e) => setSubject(e.target.value)}
+            placeholder="Objet du mail"
+            className="mt-3 h-11 w-full rounded-xl border border-line bg-white px-3.5 text-[13.5px] font-semibold text-ink outline-none focus:border-royal"
+          />
+          <textarea
+            value={body}
+            onChange={(e) => setBody(e.target.value)}
+            rows={10}
+            placeholder={`Bonjour ${p.contact || ""},\n\nÉcris ici le message que tu veux lui envoyer.`}
+            className="mt-2 w-full rounded-xl border border-line bg-white p-3.5 text-[13px] leading-relaxed text-ink outline-none focus:border-royal"
+          />
+
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <Button
+              variant="primary"
+              className="!bg-royal hover:!bg-royal-dark"
+              icon={<IconSend size={14} />}
+              disabled={busy === "envoi" || !subject.trim() || !body.trim()}
+              onClick={() =>
+                run("envoi", async () => {
+                  await api.sendOneMail(p.id, subject, body);
+                  toast(`Mail envoyé à ${p.entreprise}.`);
+                  await onChanged();
+                })
+              }
+            >
+              {busy === "envoi" ? "Envoi en cours..." : `Envoyer à ${p.email}`}
+            </Button>
+            <Button
+              size="md"
+              variant="secondary"
+              disabled={busy === "brouillon" || (!subject.trim() && !body.trim())}
+              onClick={() =>
+                run("brouillon", async () => {
+                  await api.patchProspect({ id: p.id, draft: { subject, body } });
+                  toast("Brouillon enregistré.");
+                })
+              }
+            >
+              Enregistrer le brouillon
+            </Button>
+            <Button
+              size="md"
+              variant="ghost"
+              icon={<IconCopy size={13} />}
+              onClick={() => copy(`${subject}\n\n${body}`, "Mail copié.")}
+            >
+              Copier
+            </Button>
+          </div>
+          <p className="mt-2.5 text-[11px] leading-relaxed text-ink-mute">
+            Le mail part de ta boîte Gmail. Un lien de désabonnement est ajouté automatiquement en bas : c&apos;est
+            obligatoire, et c&apos;est ce qui te protège.
+          </p>
         </div>
 
         {/* Script d'appel */}

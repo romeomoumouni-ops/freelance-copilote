@@ -71,7 +71,7 @@ export async function PATCH(req: NextRequest) {
   const uid = await getUserId(req);
   if (!uid) return NextResponse.json({ error: "Connecte-toi pour continuer." }, { status: 401 });
   const body = await req.json().catch(() => ({}));
-  const { id, status, notes, contact, email, activite, service } = body as {
+  const { id, status, notes, contact, email, activite, service, draft } = body as {
     id?: string;
     status?: ProspectStatus;
     notes?: string;
@@ -79,6 +79,7 @@ export async function PATCH(req: NextRequest) {
     email?: string;
     activite?: string;
     service?: string;
+    draft?: { subject?: string; body?: string };
   };
   if (!id) return NextResponse.json({ error: "id manquant" }, { status: 400 });
   const patch: Partial<Prospect> = {};
@@ -88,6 +89,14 @@ export async function PATCH(req: NextRequest) {
   if (email !== undefined) patch.email = email.trim().toLowerCase() || undefined;
   if (activite !== undefined) patch.activite = activite.trim() || undefined;
   if (service !== undefined) patch.service = service.trim() || undefined;
+  if (draft) {
+    patch.accroche = {
+      subject: String(draft.subject || ""),
+      body: String(draft.body || ""),
+      source: "template" as const,
+      at: new Date().toISOString(),
+    };
+  }
   const p = await updateProspect(uid, id, patch);
   if (!p) return NextResponse.json({ error: "Prospect introuvable" }, { status: 404 });
   return NextResponse.json({ prospect: p });

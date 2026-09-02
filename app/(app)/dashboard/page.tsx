@@ -81,7 +81,7 @@ export default function DashboardPage() {
     }
   }
 
-  const hot = prospects.filter((p) => p.status === "nouveau").sort((a, b) => b.score - a.score).slice(0, 8);
+  const hot = prospects.filter((p) => p.status === "nouveau").slice(0, 8);
   const replied = prospects.filter((p) => p.status === "repondu").slice(0, 5);
   const t = stats?.totals;
 
@@ -142,12 +142,12 @@ export default function DashboardPage() {
         {/* Prospects chauds */}
         <Card>
           <div className="flex items-center justify-between gap-3">
-            <h2 className="text-[15px] font-bold text-ink">Tes prospects les plus chauds</h2>
+            <h2 className="text-[15px] font-bold text-ink">Tes prospects à contacter</h2>
             <Link href="/prospects" className="text-[12px] font-semibold text-royal hover:text-royal-dark">
               Tout voir
             </Link>
           </div>
-          <p className="mt-0.5 text-[12px] text-ink-mute">Classés par urgence réelle : plus le site a de problèmes, plus le prospect a besoin de toi.</p>
+          <p className="mt-0.5 text-[12px] text-ink-mute">Ceux à qui tu n&apos;as pas encore écrit. Clique sur « Tout voir » pour rédiger et envoyer.</p>
           {hot.length === 0 ? (
             <div className="mt-6 rounded-2xl bg-canvas p-6 text-center">
               <p className="text-[13px] font-semibold text-ink">Aucun prospect à contacter.</p>
@@ -162,12 +162,8 @@ export default function DashboardPage() {
                   <div className="min-w-0">
                     <p className="truncate text-[13.5px] font-bold text-ink">{p.entreprise}</p>
                     <p className="truncate text-[11.5px] text-ink-mute">
-                      {p.signals[0]?.label || "Pas encore analysé"}
-                      {p.signals[1] ? ` + ${p.signals.length - 1} autre${p.signals.length > 2 ? "s" : ""}` : ""}
+                      {[p.activite, p.service].filter(Boolean).join(" · ") || p.email}
                     </p>
-                  </div>
-                  <div className="flex shrink-0 items-center gap-2">
-                    <Badge tone={p.score >= 60 ? "orange" : "gray"}>{p.score}/100</Badge>
                   </div>
                 </li>
               ))}

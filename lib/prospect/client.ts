@@ -44,7 +44,11 @@ export const api = {
   prospects: () => jf<{ prospects: Prospect[] }>("/api/prospection/prospects"),
   addProspects: (rows: Partial<Prospect>[]) =>
     jf<{ added: number; prospects: Prospect[] }>("/api/prospection/prospects", json({ rows })),
-  patchProspect: (patch: { id: string } & Partial<Pick<Prospect, "status" | "notes" | "contact" | "email" | "activite" | "service">>) =>
+  patchProspect: (
+    patch: { id: string } & Partial<Pick<Prospect, "status" | "notes" | "contact" | "email" | "activite" | "service">> & {
+      draft?: { subject: string; body: string };
+    }
+  ) =>
     jf<{ prospect: Prospect }>("/api/prospection/prospects", { ...json(patch), method: "PATCH" }),
   deleteProspect: (id: string) => jf<{ ok: true }>(`/api/prospection/prospects?id=${id}`, { method: "DELETE" }),
   analyze: (id: string) => jf<{ prospect: Prospect }>("/api/prospection/analyze", json({ id })),
@@ -59,6 +63,8 @@ export const api = {
   patchCampaign: (id: string, active: boolean) =>
     jf<{ campaign: Campaign }>("/api/prospection/campaigns", { ...json({ id, active }), method: "PATCH" }),
   deleteCampaign: (id: string) => jf<{ ok: true }>(`/api/prospection/campaigns?id=${id}`, { method: "DELETE" }),
+  sendOneMail: (id: string, subject: string, body: string) =>
+    jf<{ ok: true; prospect: Prospect }>("/api/prospection/send-one", json({ id, subject, body })),
   send: () =>
     jf<{ sent: number; remaining: number; capLeft?: number; capped?: boolean; errors?: string[] }>(
       "/api/prospection/send",
