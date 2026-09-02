@@ -17,6 +17,14 @@ import { api, type CallScript, type Prospect } from "@/lib/prospect/client";
 import ProspectTable, { emptyRow, isEmptyRow, rowIsValid, type DraftRow } from "@/components/prospects/ProspectTable";
 import { STATUS_LABELS, type ProspectStatus } from "@/lib/prospect/types";
 
+/** Adresse complète et nom de domaine, sans importer le module serveur. */
+function siteLinks(site?: string) {
+  if (!site) return null;
+  const href = /^https?:\/\//i.test(site) ? site : `https://${site}`;
+  const label = site.replace(/^https?:\/\//i, "").replace(/^www\./i, "").replace(/\/$/, "");
+  return { href, label };
+}
+
 /* Pastille de score : lecture de donnée, pas badge décoratif. */
 function ScoreChip({ score }: { score: number }) {
   const tone =
@@ -149,7 +157,9 @@ Remplis le tableau : entreprise, e-mail, et son activité en deux mots. Si tu as
         </Card>
       ) : (
         <div className="space-y-2.5">
-          {shown.map((p) => (
+          {shown.map((p) => {
+            const site = siteLinks(p.site);
+            return (
             <Card key={p.id} hover flush className="cursor-pointer p-4" onClick={() => setSelected(p)}>
               <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
                 <div className="min-w-0 flex-1">
@@ -159,10 +169,26 @@ Remplis le tableau : entreprise, e-mail, et son activité en deux mots. Si tu as
                       {STATUS_LABELS[p.status]}
                     </Badge>
                   </div>
-                  <p className="mt-0.5 truncate text-[12px] text-ink-mute">
-                    {p.activite ? <span className="font-semibold text-ink-soft">{p.activite} · </span> : null}
-                    {p.email}
-                    {p.site ? ` · ${p.site.replace(/^https?:\/\//, "")}` : ""}
+                  <p className="mt-0.5 flex items-center gap-1.5 truncate text-[12px] text-ink-mute">
+                    {p.activite ? <span className="shrink-0 font-semibold text-ink-soft">{p.activite}</span> : null}
+                    {p.activite ? <span className="shrink-0">·</span> : null}
+                    <span className="truncate">{p.email}</span>
+                    {site ? (
+                      <>
+                        <span className="shrink-0">·</span>
+                        <a
+                          href={site.href}
+                          target="_blank"
+                          rel="noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="inline-flex shrink-0 items-center gap-1 font-semibold text-royal hover:underline"
+                          title="Ouvrir le site du prospect"
+                        >
+                          {site.label}
+                          <IconExternal size={10} />
+                        </a>
+                      </>
+                    ) : null}
                   </p>
                 </div>
                 <div className="flex flex-wrap items-center gap-1.5">
@@ -175,7 +201,8 @@ Remplis le tableau : entreprise, e-mail, et son activité en deux mots. Si tu as
                 </div>
               </div>
             </Card>
-          ))}
+            );
+          })}
         </div>
       )}
 
@@ -268,16 +295,30 @@ function ProspectDetail({
         {/* Signaux réels */}
         <div className="rounded-2xl bg-canvas p-4">
           <div className="flex items-center justify-between gap-2">
-            <p className="text-[12px] font-bold uppercase tracking-wide text-ink-mute">Signaux détectés sur son site</p>
+            <p className="text-[12px] font-bold uppercase tracking-wide text-ink-mute">
+              {p.site ? "Signaux détectés sur son site" : "Ce qu'on a trouvé"}
+            </p>
             <div className="flex items-center gap-2">
-              {p.site && (
+              {p.site ? (
                 <a
-                  href={/^https?:/.test(p.site) ? p.site : `https://${p.site}`}
+                  href={siteLinks(p.site)!.href}
                   target="_blank"
                   rel="noreferrer"
                   className="flex items-center gap-1 text-[11.5px] font-semibold text-royal hover:text-royal-dark"
                 >
                   Ouvrir le site <IconExternal size={12} />
+                </a>
+              ) : (
+                /* Pas de site : on aide quand même le freelance à se renseigner */
+                <a
+                  href={`https://www.google.com/search?q=${encodeURIComponent(
+                    [p.entreprise, p.activite].filter(Boolean).join(" ")
+                  )}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center gap-1 text-[11.5px] font-semibold text-royal hover:text-royal-dark"
+                >
+                  Chercher sur Google <IconExternal size={12} />
                 </a>
               )}
               <Button size="sm" variant="secondary" disabled={busy === "analyze"} onClick={() => run("analyze", async () => { await api.analyze(p.id); await onChanged(); toast("Site analysé."); })}>
