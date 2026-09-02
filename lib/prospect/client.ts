@@ -11,7 +11,7 @@ async function jf<T>(url: string, init?: RequestInit): Promise<T> {
   const token = await authToken();
   const headers = new Headers(init?.headers);
   if (token) headers.set("Authorization", `Bearer ${token}`);
-  const res = await fetch(url, { ...init, headers });
+  const res = await fetch(url, { ...init, headers, cache: "no-store" });
   const text = await res.text();
   let data: T & { error?: string };
   try {

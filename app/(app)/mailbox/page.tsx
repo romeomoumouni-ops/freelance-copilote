@@ -6,6 +6,7 @@
    test automatique dès que le format est bon, aide WhatsApp si blocage. */
 
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
 import PageHeader from "@/components/ui/PageHeader";
@@ -23,6 +24,7 @@ type TestState = "idle" | "testing" | "ok" | "error";
 
 export default function MailboxPage() {
   const toast = useToast();
+  const router = useRouter();
   const [loaded, setLoaded] = useState(false);
   const [connected, setConnected] = useState(false);
   const [wizard, setWizard] = useState(false);
@@ -361,7 +363,14 @@ export default function MailboxPage() {
                   <p className="mt-1.5 text-[12.5px] leading-relaxed text-ink-soft">
                     Connexion vérifiée. Direction Prospects pour ajouter ta première liste, puis Campagnes pour lancer.
                   </p>
-                  <Button variant="primary" className="mt-3 !bg-royal hover:!bg-royal-dark" onClick={() => setWizard(false)}>
+                  <Button
+                    variant="primary"
+                    className="mt-3 !bg-royal hover:!bg-royal-dark"
+                    onClick={() => {
+                      setWizard(false);
+                      router.push("/dashboard");
+                    }}
+                  >
                     Terminer
                   </Button>
                 </div>

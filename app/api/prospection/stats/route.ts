@@ -39,7 +39,7 @@ export async function GET(req: NextRequest) {
     sentToday,
     dailyCap: mailbox?.dailyCap ?? 40,
     dueCount: due.length,
-    mailboxReady: !!mailbox?.appPassword,
+    mailboxReady: !!mailbox?.appPassword && !!mailbox?.verifiedAt,
     series,
     events: events.slice(0, 12),
   });

@@ -29,6 +29,19 @@ export default function DashboardPage() {
 
   useEffect(() => {
     load().catch(() => {});
+    /* Rafraîchit dès qu'on revient sur la page : retour depuis « Boîte
+       mail », changement d'onglet, ou retour arrière du navigateur
+       (page restaurée depuis le cache, sinon l'écran resterait figé). */
+    const refresh = () => load().catch(() => {});
+    const onVisible = () => document.visibilityState === "visible" && refresh();
+    window.addEventListener("focus", refresh);
+    window.addEventListener("pageshow", refresh);
+    document.addEventListener("visibilitychange", onVisible);
+    return () => {
+      window.removeEventListener("focus", refresh);
+      window.removeEventListener("pageshow", refresh);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
   }, [load]);
 
   async function sendWave() {

@@ -30,6 +30,9 @@ async function flush(uid: string, baseUrl: string) {
   if (!mailbox || !mailbox.appPassword) {
     return { error: "Connecte d'abord ta boîte Gmail dans « Boîte mail ».", sent: 0, remaining: 0 };
   }
+  if (!mailbox.verifiedAt) {
+    return { error: "Ta boîte n'est pas encore vérifiée : termine la connexion dans « Boîte mail ».", sent: 0, remaining: 0 };
+  }
   const [campaigns, prospects, suppression, sentToday] = await Promise.all([
     getCampaigns(uid),
     getProspects(uid),
