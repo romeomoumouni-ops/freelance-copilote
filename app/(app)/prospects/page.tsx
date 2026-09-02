@@ -249,7 +249,6 @@ function ProspectDetail({
     setBody(p.accroche?.body ?? "");
     setScript(null);
   }, [p.id, p.accroche?.subject, p.accroche?.body]);
-  const auditPath = `/audit/${user?.id}/${p.id}`;
 
   async function run(label: string, fn: () => Promise<void>) {
     setBusy(label);
@@ -344,42 +343,6 @@ function ProspectDetail({
             </p>
           )}
         </div>
-
-        {/* Mini-audit partageable */}
-        {p.signals.length > 0 && (
-          <div className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border-2 border-ink bg-white p-4 shadow-[4px_4px_0_0_#FFEE66]">
-            <div>
-              <p className="text-[13px] font-bold text-ink">Mini-audit à envoyer</p>
-              <p className="text-[11.5px] text-ink-mute">Une page propre, à son nom : ta meilleure preuve de sérieux.</p>
-            </div>
-            <div className="flex gap-2">
-              <a href={auditPath} target="_blank" rel="noreferrer">
-                <Button size="sm" variant="secondary">Voir</Button>
-              </a>
-              <Button size="sm" variant="primary" icon={<IconCopy size={13} />} onClick={() => copy(`${location.origin}${auditPath}`, "Lien de l'audit copié.")}>
-                Copier le lien
-              </Button>
-            </div>
-          </div>
-        )}
-
-        {/* Contexte du prospect */}
-        {(p.activite || p.service) && (
-          <div className="grid gap-2 sm:grid-cols-2">
-            {p.activite && (
-              <div className="rounded-2xl bg-canvas p-3.5">
-                <p className="text-[11px] font-bold uppercase tracking-wide text-ink-mute">Son activité</p>
-                <p className="mt-1 text-[13px] font-semibold text-ink">{p.activite}</p>
-              </div>
-            )}
-            {p.service && (
-              <div className="rounded-2xl bg-canvas p-3.5">
-                <p className="text-[11px] font-bold uppercase tracking-wide text-ink-mute">Ce que tu lui proposes</p>
-                <p className="mt-1 text-[13px] font-semibold text-ink">{p.service}</p>
-              </div>
-            )}
-          </div>
-        )}
 
         {/* Écrire et envoyer le mail : à la main, ou avec l'aide de l'IA */}
         <div className="rounded-2xl border-2 border-ink bg-white p-4 shadow-[4px_4px_0_0_#FFEE66]">

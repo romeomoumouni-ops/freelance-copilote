@@ -14,7 +14,7 @@ const montserrat = Montserrat({
 export const metadata: Metadata = {
   title: "Freelance Copilote · La prospection devient simple",
   description:
-    "Trouve tes futurs clients et convertis 10 fois plus de prospects : listes analysées sur de vraies données, mails personnalisés, relances automatiques, mini-audit à envoyer.",
+    "Trouve tes futurs clients et convertis 10 fois plus de prospects : listes analysées sur de vraies données, mails personnalisés, relances automatiques, suivi jusqu'à la signature.",
 };
 
 export default function RootLayout({

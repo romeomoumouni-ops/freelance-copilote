@@ -16,7 +16,7 @@ const SYSTEM =
 export function fillVars(
   text: string,
   p: Prospect,
-  extra: { fromName?: string; auditUrl?: string } = {}
+  extra: { fromName?: string } = {}
 ): string {
   const signal = p.signals[0]?.hook || "j'ai repéré quelques points améliorables sur votre présence en ligne";
   return text
@@ -26,7 +26,6 @@ export function fillVars(
     .replace(/\{\{contact\}\}/g, p.contact || "")
     .replace(/\{\{site\}\}/g, domainOf(p.site) || "votre site")
     .replace(/\{\{signal\}\}/g, signal)
-    .replace(/\{\{audit\}\}/g, extra.auditUrl || "")
     .replace(/\{\{moi\}\}/g, extra.fromName || "")
     .replace(/ {2,}/g, " ")
     .replace(/\n{3,}/g, "\n\n");
@@ -92,7 +91,7 @@ CORPS:
     : "C'est exactement le genre de choses que je corrige pour mes clients, en général en quelques jours.";
 
   const conclusion = dom
-    ? "J'ai préparé un mini-audit gratuit de votre site, avec les points constatés et ce que ça change. Si vous voulez le recevoir, répondez simplement à ce mail."
+    ? "Si vous voulez, je vous explique en deux lignes ce que ça change concrètement. Répondez simplement à ce mail."
     : "Si le sujet vous intéresse, répondez simplement à ce mail et je vous montre concrètement ce que ça donnerait chez vous.";
 
   const lines = [
@@ -124,7 +123,7 @@ En préparant ma journée, je me suis intéressé à {{entreprise}}. Un point m'
 
 C'est exactement le genre de choses que je corrige pour mes clients, en général en quelques jours.
 
-J'ai préparé un mini-audit gratuit de votre site, avec les points constatés et ce que ça change pour vous. Si vous voulez le recevoir, répondez simplement à ce mail.
+Si vous voulez, je vous explique en deux lignes ce que ça change pour vous. Répondez simplement à ce mail.
 
 Bonne journée,
 {{moi}}`,
@@ -134,11 +133,11 @@ Bonne journée,
       subject: "",
       body: `Bonjour {{contact}},
 
-Je me permets de revenir vers vous : mon mini-audit de {{site}} est toujours prêt, il tient sur une page et il est gratuit.
+Je me permets de revenir vers vous, au cas où mon message serait passé inaperçu.
 
-Le point principal que j'y détaille : {{signal}}.
+Le point qui m'avait arrêté : {{signal}}.
 
-Un simple « oui » en réponse et je vous l'envoie.
+Un simple « oui » en réponse et je vous en dis plus.
 
 Bonne journée,
 {{moi}}`,
@@ -150,7 +149,7 @@ Bonne journée,
 
 Dernier message de ma part, promis. Je ne veux pas encombrer votre boîte mail.
 
-Si améliorer votre présence en ligne est un sujet pour {{entreprise}} un jour, vous avez mon adresse. Je garde votre mini-audit sous le coude.
+Si le sujet devient d'actualité pour {{entreprise}} un jour, vous avez mon adresse.
 
 Excellente continuation,
 {{moi}}`,
@@ -208,7 +207,7 @@ Format exact :
       },
       {
         label: "Pas maintenant",
-        text: `Je comprends tout à fait, ce n'est pas le bon moment. Je vous laisse le mini-audit de ${dom} : il restera valable. Je reviendrai vers vous dans quelques mois, et d'ici là vous avez mon adresse.\n\nBonne continuation,\n${me}`,
+        text: `Je comprends tout à fait, ce n'est pas le bon moment. Je note de revenir vers vous dans quelques mois, et d'ici là vous avez mon adresse si le sujet revient sur la table.\n\nBonne continuation,\n${me}`,
       },
     ],
   };
@@ -244,15 +243,15 @@ export function generateCallScript(p: Prospect, fromName: string): CallScript {
     objections: [
       {
         objection: "C'est combien ?",
-        reponse: "Ça dépend de ce qu'on corrige. Je préfère vous faire une proposition précise après 15 minutes d'échange plutôt qu'un chiffre au hasard. Le mini-audit, lui, est gratuit.",
+        reponse: "Ça dépend de ce qu'on corrige. Je préfère vous faire une proposition précise après 15 minutes d'échange plutôt qu'un chiffre au hasard.",
       },
       {
         objection: "On a déjà quelqu'un",
-        reponse: "Parfait, gardez-le. Mon mini-audit vous servira de deuxième avis : s'il confirme que tout va bien, vous êtes tranquille. S'il révèle un souci, vous saurez quoi demander.",
+        reponse: "Parfait, gardez-le. Voyez mon appel comme un deuxième avis : si tout va bien, vous êtes tranquille. Si je repère un souci, vous saurez quoi lui demander.",
       },
       {
         objection: "Pas le temps",
-        reponse: "Je comprends. Je vous envoie le mini-audit par mail, il se lit en deux minutes. Et je vous rappelle la semaine prochaine si ça vous va.",
+        reponse: "Je comprends. Je vous envoie un résumé par mail, il se lit en deux minutes. Et je vous rappelle la semaine prochaine si ça vous va.",
       },
     ],
     conclusion: "On se cale 15 minutes cette semaine ? Je vous montre tout, et vous décidez ensuite. Quel jour vous arrange ?",

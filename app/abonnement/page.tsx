@@ -7,7 +7,7 @@ import { IconCheck, IconAlert, IconArrowRight } from "@/components/icons";
 const INCLUS = [
   "Des listes de prospects analysés : signaux réels sur chaque entreprise",
   "Des mails personnalisés écrits pour toi, avec relances automatiques",
-  "Le mini-audit à envoyer qui prouve ton sérieux",
+  "Tes mails écrits à la main ou par l'IA, corrigeables mot pour mot",
   "La boîte de réponses avec assistant pour conclure",
   "La connexion de ta boîte Gmail guidée pas à pas",
   "Le suivi de ton pipeline : contacté, a répondu, RDV calé, client signé",

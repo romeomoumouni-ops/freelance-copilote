@@ -17,7 +17,7 @@ const NAV = [
 const INCLUS = [
   "Des listes de prospects analysés : signaux réels sur chaque entreprise",
   "Des mails personnalisés écrits pour toi, avec relances automatiques",
-  "Le mini-audit à envoyer qui prouve ton sérieux",
+  "Tes mails écrits à la main ou par l'IA, corrigeables mot pour mot",
   "La boîte de réponses avec assistant pour conclure",
   "La connexion de ta boîte Gmail guidée pas à pas",
   "Le suivi de ton pipeline : contacté, a répondu, RDV calé, client signé",
@@ -194,7 +194,7 @@ export default function Landing() {
               </h2>
               <p className="mt-3 text-[14px] leading-relaxed text-ink-soft">
                 De la liste de prospects au client signé : signaux réels sur chaque entreprise, mails
-                personnalisés, relances automatiques et mini-audit qui prouve ton sérieux.
+                personnalisés, relances automatiques et suivi jusqu&apos;à la signature.
               </p>
               <button
                 onClick={openSignup}
@@ -261,7 +261,7 @@ export default function Landing() {
               {
                 icon: "/icon-creation.png",
                 title: "Des mails qui obtiennent des réponses",
-                desc: "Accroche personnalisée sur ses vrais problèmes, relances automatiques, arrêt dès qu'il répond. Et un mini-audit à son nom, à envoyer en un clic.",
+                desc: "Accroche personnalisée sur ses vrais problèmes, relances automatiques, arrêt dès qu'il répond. Et tu réécris chaque mot avant d'envoyer si tu veux.",
               },
               {
                 icon: "/icon-expert.png",

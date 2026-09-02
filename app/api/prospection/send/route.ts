@@ -56,8 +56,7 @@ async function flush(uid: string, baseUrl: string) {
     const prospect = prospects.find((p) => p.id === d.prospectId)!;
     const step = campaign.steps[d.stepIndex];
 
-    const auditUrl = `${baseUrl}/audit/${uid}/${prospect.id}`;
-    const extra = { fromName: mailbox.fromName, auditUrl };
+    const extra = { fromName: mailbox.fromName };
     let subject = fillVars(step.subject, prospect, extra).trim();
     if (!subject) subject = "Re: " + (contact.firstSubject || `${prospect.entreprise}`);
     let text = fillVars(step.body, prospect, extra).trim();
