@@ -3,6 +3,8 @@ import { getProspects, saveProspects, updateProspect, newId } from "@/lib/prospe
 import { getUserId } from "@/lib/auth/server";
 import type { Prospect, ProspectStatus } from "@/lib/prospect/types";
 
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
@@ -21,20 +23,26 @@ export async function POST(req: NextRequest) {
   if (!rows.length) return NextResponse.json({ error: "Aucun prospect fourni." }, { status: 400 });
 
   const list = await getProspects(uid);
-  const existingKeys = new Set(list.map((p) => (p.email || p.site || p.entreprise).toLowerCase()));
+  // dédoublonnage sur l'e-mail : c'est l'identité du prospect
+  const existingKeys = new Set(list.map((p) => (p.email || p.entreprise).toLowerCase()));
   const added: Prospect[] = [];
+  let rejetes = 0;
   for (const r of rows.slice(0, 200)) {
     const entreprise = String(r.entreprise || "").trim();
-    if (!entreprise) continue;
-    const key = String(r.email || r.site || entreprise).toLowerCase();
-    if (existingKeys.has(key)) continue;
-    existingKeys.add(key);
+    const email = String(r.email || "").trim().toLowerCase();
+    // sans nom d'entreprise ni e-mail valide, le prospect est inutilisable
+    if (!entreprise || !EMAIL_RE.test(email)) {
+      rejetes += 1;
+      continue;
+    }
+    if (existingKeys.has(email)) continue;
+    existingKeys.add(email);
     added.push({
       id: newId(),
       createdAt: new Date().toISOString(),
       entreprise,
       contact: String(r.contact || "").trim() || undefined,
-      email: String(r.email || "").trim().toLowerCase() || undefined,
+      email,
       site: String(r.site || "").trim() || undefined,
       ville: String(r.ville || "").trim() || undefined,
       status: "nouveau",
@@ -42,12 +50,18 @@ export async function POST(req: NextRequest) {
       signals: [],
     });
   }
+  if (!added.length && rejetes) {
+    return NextResponse.json(
+      { error: "Chaque prospect a besoin d'un nom d'entreprise et d'une adresse e-mail valide." },
+      { status: 400 }
+    );
+  }
   try {
     await saveProspects(uid, [...added, ...list]);
   } catch (e) {
     return NextResponse.json({ error: e instanceof Error ? e.message : String(e) }, { status: 500 });
   }
-  return NextResponse.json({ added: added.length, prospects: added });
+  return NextResponse.json({ added: added.length, ignores: rejetes, prospects: added });
 }
 
 /* PATCH : mise à jour d'un prospect (statut, notes...) */

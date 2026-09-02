@@ -14,6 +14,7 @@ import { useToast } from "@/components/ui/Toast";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { IconCopy, IconExternal, IconPlus, IconRefresh, IconSearch, IconTrash } from "@/components/icons";
 import { api, type CallScript, type Prospect } from "@/lib/prospect/client";
+import ProspectTable, { emptyRow, isEmptyRow, rowIsValid, type DraftRow } from "@/components/prospects/ProspectTable";
 import { STATUS_LABELS, type ProspectStatus } from "@/lib/prospect/types";
 
 import type { BadgeTone } from "@/components/ui/Badge";
@@ -23,7 +24,7 @@ const scoreTone = (s: number): BadgeTone => (s >= 60 ? "orange" : s >= 35 ? "vio
 export default function ProspectsPage() {
   const toast = useToast();
   const [prospects, setProspects] = useState<Prospect[]>([]);
-  const [raw, setRaw] = useState("");
+  const [draft, setDraft] = useState<DraftRow[]>(() => [emptyRow(), emptyRow(), emptyRow(), emptyRow()]);
   const [importing, setImporting] = useState(false);
   const [progress, setProgress] = useState("");
   const [openImport, setOpenImport] = useState(false);
@@ -39,43 +40,36 @@ export default function ProspectsPage() {
     load().catch(() => {});
   }, [load]);
 
-  /* Import : "Entreprise ; site ; email ; contact" (site ou email optionnels).
-     Une URL seule marche aussi : l'entreprise prend le nom de domaine. */
+  /* Import depuis le tableau : e-mail et entreprise obligatoires, sinon
+     on ne peut ni écrire au prospect ni personnaliser le message. */
   async function runImport() {
-    const rows = raw
-      .split("\n")
-      .map((l) => l.trim())
-      .filter(Boolean)
-      .map((line) => {
-        const parts = line.split(/[;,\t]/).map((s) => s.trim());
-        if (parts.length === 1 && /^(https?:\/\/|www\.|[a-z0-9-]+\.[a-z]{2,})/i.test(parts[0])) {
-          const dom = parts[0].replace(/^https?:\/\//, "").replace(/^www\./, "").split("/")[0];
-          return { entreprise: dom.split(".")[0], site: parts[0] };
-        }
-        const out: Record<string, string> = { entreprise: parts[0] || "" };
-        for (const p of parts.slice(1)) {
-          if (/@/.test(p)) out.email = p;
-          else if (/\.|www|http/i.test(p)) out.site = p;
-          else if (p) out.contact = p;
-        }
-        return out;
-      })
-      .filter((r) => r.entreprise);
+    const remplies = draft.filter((r) => !isEmptyRow(r));
+    const rows = remplies.filter(rowIsValid).map((r) => ({
+      entreprise: r.entreprise.trim(),
+      email: r.email.trim(),
+      site: r.site.trim() || undefined,
+      contact: r.contact.trim() || undefined,
+    }));
     if (!rows.length) {
-      toast("Ajoute au moins une ligne.", "warning");
+      toast("Remplis au moins une ligne avec un nom d'entreprise et un e-mail valide.", "warning");
       return;
     }
+    const ignorees = remplies.length - rows.length;
     setImporting(true);
     try {
       const { added, prospects: fresh } = await api.addProspects(rows);
-      toast(`${added} prospect${added > 1 ? "s" : ""} ajouté${added > 1 ? "s" : ""}.`);
-      setRaw("");
+      toast(
+        `${added} prospect${added > 1 ? "s" : ""} ajouté${added > 1 ? "s" : ""}.` +
+          (ignorees ? ` ${ignorees} ligne${ignorees > 1 ? "s" : ""} incomplète${ignorees > 1 ? "s" : ""} ignorée${ignorees > 1 ? "s" : ""}.` : "")
+      );
+      setDraft([emptyRow(), emptyRow(), emptyRow(), emptyRow()]);
       setOpenImport(false);
       await load();
       // analyse séquentielle des VRAIS sites, avec avancement visible
+      // on analyse tout le monde : sans site, le signal « Pas de site »
+      // est justement le meilleur angle d'attaque
       for (let i = 0; i < fresh.length; i++) {
         const p = fresh[i];
-        if (!p.site) continue;
         setProgress(`Analyse ${i + 1}/${fresh.length} : ${p.entreprise}`);
         try {
           await api.analyze(p.id);
@@ -134,7 +128,7 @@ export default function ProspectsPage() {
         <Card className="py-12 text-center">
           <p className="text-[15px] font-bold text-ink">Commence par ajouter tes prospects.</p>
           <p className="mx-auto mt-2 max-w-md text-[13px] leading-relaxed text-ink-mute">
-            Colle une liste d'entreprises (une par ligne) : l'outil lit leur site, repère ce qui cloche et écrit ton accroche.
+Remplis le tableau (entreprise + e-mail), ajoute leur site si tu l'as : l'outil lit chaque site, repère ce qui cloche et écrit ton accroche.
           </p>
           <Button variant="primary" className="mt-5 !bg-royal hover:!bg-royal-dark" onClick={() => setOpenImport(true)}>
             Ajouter mes premiers prospects
@@ -174,19 +168,19 @@ export default function ProspectsPage() {
       )}
 
       {/* Modal import */}
-      <Modal open={openImport} onClose={() => setOpenImport(false)} title="Ajouter des prospects">
+      <Modal open={openImport} onClose={() => setOpenImport(false)} title="Ajouter des prospects" size="xl">
         <p className="text-[13px] leading-relaxed text-ink-soft">
-          Une ligne par prospect, au format <span className="font-semibold text-ink">Entreprise ; site ; email ; contact</span>.
-          Seul le nom est obligatoire. Une simple adresse de site marche aussi.
+          Une ligne par prospect. L&apos;<span className="font-semibold text-ink">entreprise</span> et
+          l&apos;<span className="font-semibold text-ink">e-mail</span> sont obligatoires : sans e-mail, impossible de le
+          contacter. Le site permet de détecter ses problèmes et d&apos;écrire une accroche sur mesure.
         </p>
-        <textarea
-          value={raw}
-          onChange={(e) => setRaw(e.target.value)}
-          rows={8}
-          placeholder={"Chez Marco ; chezmarco.fr ; contact@chezmarco.fr ; Marco\nclinique-sourire.com\nBoulangerie Kpondehou ; ; kpondehou@gmail.com"}
-          className="mt-3 w-full rounded-2xl border border-line bg-canvas p-3.5 font-mono text-[12.5px] text-ink outline-none focus:border-royal"
-        />
-        <Button full variant="primary" className="mt-4 !bg-royal hover:!bg-royal-dark" onClick={runImport} disabled={importing}>
+        <p className="mt-1.5 text-[12px] text-ink-mute">
+          Tu as déjà ta liste dans Excel ou Google Sheets ? Copie tes colonnes et colle-les directement dans le tableau.
+        </p>
+        <div className="mt-4">
+          <ProspectTable rows={draft} onChange={setDraft} />
+        </div>
+        <Button full variant="primary" className="mt-5 !bg-royal hover:!bg-royal-dark" onClick={runImport} disabled={importing}>
           {importing ? "Ajout en cours" : "Ajouter et analyser les sites"}
         </Button>
       </Modal>
