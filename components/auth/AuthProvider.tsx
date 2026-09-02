@@ -7,7 +7,7 @@
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import type { User } from "@supabase/supabase-js";
-import { getAuthClient } from "@/lib/auth/client";
+import { cacheAuthToken, getAuthClient } from "@/lib/auth/client";
 
 interface AuthContextValue {
   user: User | null;
@@ -51,10 +51,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return;
     }
     sb.auth.getSession().then(({ data }) => {
+      cacheAuthToken(data.session?.access_token);
       setUser(data.session?.user ?? null);
       setLoading(false);
     });
     const { data: sub } = sb.auth.onAuthStateChange((_event, session) => {
+      cacheAuthToken(session?.access_token);
       setUser(session?.user ?? null);
     });
     return () => sub.subscription.unsubscribe();
@@ -78,6 +80,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       password,
     });
     if (error) throw new Error(frenchAuthError(error.message));
+    cacheAuthToken(login.session?.access_token);
     setUser(login.user);
     return { needsConfirm: false };
   }, []);
@@ -87,12 +90,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!sb) throw new Error("Connexion au service impossible. Réessaie dans un instant.");
     const { data, error } = await sb.auth.signInWithPassword({ email: email.trim().toLowerCase(), password });
     if (error) throw new Error(frenchAuthError(error.message));
+    cacheAuthToken(data.session?.access_token);
     setUser(data.user);
   }, []);
 
   const signOut = useCallback(async () => {
     const sb = getAuthClient();
     if (sb) await sb.auth.signOut();
+    cacheAuthToken(null);
     setUser(null);
   }, []);
 

@@ -17,10 +17,33 @@ export function getAuthClient(): SupabaseClient | null {
   return client;
 }
 
+/* Le jeton est gardé en mémoire : sans ça, chaque appel API attendait
+   getSession(), qui peut aller jusqu'au réseau. */
+let cached: { token: string; expiresAt: number } | null = null;
+
+export function cacheAuthToken(token: string | null | undefined): void {
+  if (!token) {
+    cached = null;
+    return;
+  }
+  let expiresAt = Date.now() + 60_000;
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    if (payload?.exp) expiresAt = payload.exp * 1000;
+  } catch {
+    /* jeton illisible : on garde la marge minimale */
+  }
+  cached = { token, expiresAt };
+}
+
 /** Jeton d'accès de la session courante (null si déconnecté). */
 export async function authToken(): Promise<string | null> {
+  // 30 s de marge : on ne renvoie jamais un jeton sur le point d'expirer
+  if (cached && cached.expiresAt - 30_000 > Date.now()) return cached.token;
   const sb = getAuthClient();
   if (!sb) return null;
   const { data } = await sb.auth.getSession();
-  return data.session?.access_token ?? null;
+  const token = data.session?.access_token ?? null;
+  cacheAuthToken(token);
+  return token;
 }

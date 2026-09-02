@@ -74,6 +74,38 @@ export async function cacheSet<T>(key: string, value: T): Promise<void> {
   }
 }
 
+/** Lit PLUSIEURS clés d'un coup : une seule requête au lieu de N.
+    C'est ce qui rend le tableau de bord instantané. */
+export async function cacheGetMany<T>(keys: string[], maxAgeMs: number): Promise<Record<string, T | null>> {
+  const out: Record<string, T | null> = {};
+  for (const k of keys) out[k] = null;
+  if (!keys.length) return out;
+
+  const sb = getAdminClient();
+  if (sb) {
+    try {
+      const { data } = await sb
+        .from("market_cache")
+        .select("key, value, updated_at")
+        .in("key", keys.map(safeKey));
+      for (const row of data ?? []) {
+        if (Date.now() - new Date(row.updated_at as string).getTime() > maxAgeMs) continue;
+        out[row.key as string] = row.value as T;
+      }
+    } catch {
+      /* on renvoie ce qu'on a */
+    }
+    return out;
+  }
+
+  await Promise.all(
+    keys.map(async (key) => {
+      out[safeKey(key)] = await cacheGet<T>(key, maxAgeMs);
+    })
+  );
+  return out;
+}
+
 /** Helper : valeur cachée, sinon exécute `producer`, met en cache, renvoie. */
 export async function cached<T>(key: string, maxAgeMs: number, producer: () => Promise<T>): Promise<T> {
   const hit = await cacheGet<T>(key, maxAgeMs);

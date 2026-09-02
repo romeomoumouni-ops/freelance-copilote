@@ -4,7 +4,7 @@
 
 import { promises as fs } from "fs";
 import path from "path";
-import { cacheGet } from "@/lib/marketplace/store";
+import { cacheGet, cacheGetMany } from "@/lib/marketplace/store";
 import { getAdminClient } from "@/lib/supabase";
 import type { Campaign, EventLog, MailboxSettings, Prospect } from "@/lib/prospect/types";
 
@@ -137,15 +137,6 @@ export async function bumpSentToday(uid: string, n = 1): Promise<number> {
   return v;
 }
 
-export async function getSentSeries(uid: string, days = 14): Promise<{ date: string; sent: number }[]> {
-  const out: { date: string; sent: number }[] = [];
-  for (let i = days - 1; i >= 0; i--) {
-    const d = new Date(Date.now() - i * 86400000).toISOString().slice(0, 10);
-    out.push({ date: d, sent: await get<number>(K.sent(uid, d), 0) });
-  }
-  return out;
-}
-
 /* -------------------- journal d'événements -------------------- */
 
 export async function logEvent(uid: string, type: EventLog["type"], label: string): Promise<void> {
@@ -160,6 +151,39 @@ export async function logEvent(uid: string, type: EventLog["type"], label: strin
 
 export function getEvents(uid: string): Promise<EventLog[]> {
   return get<EventLog[]>(K.events(uid), []);
+}
+
+/* -------------------- vue d'ensemble (1 seule requête) -------------------- */
+
+export interface Overview {
+  prospects: Prospect[];
+  campaigns: Campaign[];
+  mailbox: MailboxSettings | null;
+  suppression: string[];
+  events: EventLog[];
+  sentToday: number;
+}
+
+/** Tout l'écran d'accueil en UN aller-retour : avant, chaque bloc faisait
+    sa propre requête et l'utilisateur attendait plusieurs secondes. */
+export async function getOverview(uid: string): Promise<Overview> {
+  const keys = [
+    K.prospects(uid),
+    K.campaigns(uid),
+    K.mailbox(uid),
+    K.suppression(uid),
+    K.events(uid),
+    K.sent(uid, today()),
+  ];
+  const raw = await cacheGetMany<unknown>(keys, FOREVER);
+  return {
+    prospects: (raw[K.prospects(uid)] as Prospect[]) ?? [],
+    campaigns: (raw[K.campaigns(uid)] as Campaign[]) ?? [],
+    mailbox: (raw[K.mailbox(uid)] as MailboxSettings) ?? null,
+    suppression: (raw[K.suppression(uid)] as string[]) ?? [],
+    events: (raw[K.events(uid)] as EventLog[]) ?? [],
+    sentToday: (raw[K.sent(uid, today())] as number) ?? 0,
+  };
 }
 
 /* -------------------- util -------------------- */

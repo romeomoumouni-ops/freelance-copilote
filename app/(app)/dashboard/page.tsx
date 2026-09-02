@@ -22,9 +22,9 @@ export default function DashboardPage() {
   const [checking, setChecking] = useState(false);
 
   const load = useCallback(async () => {
-    const [s, p] = await Promise.all([api.stats(), api.prospects()]);
+    const s = await api.stats();
     setStats(s);
-    setProspects(p.prospects);
+    setProspects(s.prospects);
   }, []);
 
   useEffect(() => {
@@ -133,7 +133,11 @@ export default function DashboardPage() {
         ].map((s) => (
           <Card key={s.label} className="!p-4">
             <p className="text-[11px] font-semibold uppercase tracking-wide text-ink-mute">{s.label}</p>
-            <p className="mt-1 text-2xl font-extrabold text-ink">{s.value ?? "0"}</p>
+            {stats ? (
+              <p className="mt-1 text-2xl font-extrabold text-ink">{s.value ?? 0}</p>
+            ) : (
+              <span className="mt-2 block h-6 w-9 animate-pulse rounded-md bg-line" />
+            )}
           </Card>
         ))}
       </div>
@@ -148,7 +152,13 @@ export default function DashboardPage() {
             </Link>
           </div>
           <p className="mt-0.5 text-[12px] text-ink-mute">Ceux à qui tu n&apos;as pas encore écrit. Clique sur « Tout voir » pour rédiger et envoyer.</p>
-          {hot.length === 0 ? (
+          {!stats ? (
+            <div className="mt-4 space-y-2">
+              {[0, 1, 2].map((i) => (
+                <div key={i} className="h-10 animate-pulse rounded-xl bg-canvas" />
+              ))}
+            </div>
+          ) : hot.length === 0 ? (
             <div className="mt-6 rounded-2xl bg-canvas p-6 text-center">
               <p className="text-[13px] font-semibold text-ink">Aucun prospect à contacter.</p>
               <Link href="/prospects" className="mt-2 inline-block text-[13px] font-semibold text-royal hover:text-royal-dark">
@@ -219,7 +229,13 @@ export default function DashboardPage() {
           {/* Activité */}
           <Card>
             <h2 className="text-[15px] font-bold text-ink">Activité récente</h2>
-            {(stats?.events?.length ?? 0) === 0 ? (
+            {!stats ? (
+              <div className="mt-3 space-y-1.5">
+                {[0, 1].map((i) => (
+                  <div key={i} className="h-4 animate-pulse rounded bg-canvas" />
+                ))}
+              </div>
+            ) : (stats.events?.length ?? 0) === 0 ? (
               <p className="mt-3 text-[12.5px] text-ink-mute">Encore rien. Ta première campagne va remplir ce journal.</p>
             ) : (
               <ul className="mt-3 space-y-1.5">

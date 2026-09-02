@@ -35,8 +35,8 @@ export interface Stats {
   dailyCap: number;
   dueCount: number;
   mailboxReady: boolean;
-  series: { date: string; sent: number }[];
   events: EventLog[];
+  prospects: Prospect[];
 }
 
 export const api = {
